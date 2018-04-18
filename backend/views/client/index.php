@@ -13,7 +13,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="order-client-index">
 
     <p>
-        <?= Html::a('Новый клиент', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Добавить нового', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= GridView::widget([
@@ -26,7 +26,19 @@ $this->params['breadcrumbs'][] = $this->title;
             'name',
             'email:email',
             'phone',
-            'created_at',
+            'org',
+            //'bank',
+            //'bik',
+            //'ks',
+            //'rs',
+            //'kpp',
+            //'inn',
+            //'dir',
+            //'address',
+            //'orgn',
+            //'okpo',
+            //'okato',
+            //'created_at',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

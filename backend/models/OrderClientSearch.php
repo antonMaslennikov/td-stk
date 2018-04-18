@@ -19,7 +19,7 @@ class OrderClientSearch extends OrderClient
     {
         return [
             [['id'], 'integer'],
-            [['name', 'email', 'phone', 'created_at'], 'safe'],
+            [['name', 'email', 'phone', 'org', 'bank', 'bik', 'ks', 'rs', 'kpp', 'inn', 'dir', 'address', 'orgn', 'okpo', 'okato', 'created_at'], 'safe'],
         ];
     }
 
@@ -65,7 +65,19 @@ class OrderClientSearch extends OrderClient
 
         $query->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'email', $this->email])
-            ->andFilterWhere(['like', 'phone', $this->phone]);
+            ->andFilterWhere(['like', 'phone', $this->phone])
+            ->andFilterWhere(['like', 'org', $this->org])
+            ->andFilterWhere(['like', 'bank', $this->bank])
+            ->andFilterWhere(['like', 'bik', $this->bik])
+            ->andFilterWhere(['like', 'ks', $this->ks])
+            ->andFilterWhere(['like', 'rs', $this->rs])
+            ->andFilterWhere(['like', 'kpp', $this->kpp])
+            ->andFilterWhere(['like', 'inn', $this->inn])
+            ->andFilterWhere(['like', 'dir', $this->dir])
+            ->andFilterWhere(['like', 'address', $this->address])
+            ->andFilterWhere(['like', 'orgn', $this->orgn])
+            ->andFilterWhere(['like', 'okpo', $this->okpo])
+            ->andFilterWhere(['like', 'okato', $this->okato]);
 
         return $dataProvider;
     }

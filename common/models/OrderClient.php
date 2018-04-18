@@ -11,6 +11,18 @@ use Yii;
  * @property string $name
  * @property string $email
  * @property string $phone
+ * @property string $org
+ * @property string $bank
+ * @property string $bik
+ * @property string $ks
+ * @property string $rs
+ * @property string $kpp
+ * @property string $inn
+ * @property string $dir
+ * @property string $address
+ * @property string $orgn
+ * @property string $okpo
+ * @property string $okato
  * @property string $created_at
  */
 class OrderClient extends \yii\db\ActiveRecord
@@ -30,8 +42,13 @@ class OrderClient extends \yii\db\ActiveRecord
     {
         return [
             [['name', 'email', 'phone'], 'required'],
+            [['created_at', 'org', 'bank', 'bik', 'ks', 'rs', 'kpp', 'inn', 'dir', 'address', 'orgn', 'okpo', 'okato'], 'safe'],
             [['name', 'email', 'phone'], 'string', 'max' => 255],
-            ['email', 'email'],
+            [['org', 'bank'], 'string', 'max' => 150],
+            [['bik', 'inn', 'okpo', 'okato'], 'string', 'max' => 30],
+            [['ks', 'rs', 'kpp', 'orgn'], 'string', 'max' => 40],
+            [['dir'], 'string', 'max' => 100],
+            [['address'], 'string', 'max' => 200],
         ];
     }
 
@@ -42,10 +59,22 @@ class OrderClient extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'ФИО',
+            'name' => 'Имя',
             'email' => 'Email',
             'phone' => 'Телефон',
-            'created_at' => 'Создан',
+            'org' => 'Организация',
+            'bank' => 'Банк',
+            'bik' => 'БИК',
+            'ks' => 'Кор. счёт',
+            'rs' => 'Расчтёный счёт',
+            'kpp' => 'КПП',
+            'inn' => 'ИНН',
+            'dir' => 'Директор',
+            'address' => 'Фактический адрес',
+            'orgn' => 'ОГРН',
+            'okpo' => 'ОКПО',
+            'okato' => 'ОКАТО',
+            'created_at' => 'Дата создания',
         ];
     }
 }

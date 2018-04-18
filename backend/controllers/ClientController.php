@@ -5,16 +5,12 @@ namespace backend\controllers;
 use Yii;
 use common\models\OrderClient;
 use backend\models\OrderClientSearch;
-use backend\models\OrderClientForm;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use yii\widgets\ActiveForm;
-use yii\web\Response;
-use yii\helpers\Url;
 
 /**
- * OrderClientController implements the CRUD actions for OrderClient model.
+ * ClientController implements the CRUD actions for OrderClient model.
  */
 class ClientController extends Controller
 {
@@ -68,20 +64,10 @@ class ClientController extends Controller
      */
     public function actionCreate()
     {
-        $model = new OrderClientForm();
+        $model = new OrderClient();
 
-        if ($model->load(Yii::$app->request->post())) {
-            if ($client = $model->saveClient()) {
-                if (Yii::$app->request->post('goBack')) {
-                    return Yii::$app->response->redirect(Yii::$app->request->post('goBack') . (strpos(Yii::$app->request->post('goBack'), '?') === false ? '?' : '&') . 'SearchClientForm[client_id]=' . $client->id);
-                } else {
-                    return $this->redirect(['view', 'id' => $model->id]);
-                }
-            } else {
-                if (Yii::$app->request->post('goBack')) {
-                    return $this->redirect([Yii::$app->request->post('goBack')]);
-                }
-            }
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('create', [
@@ -137,52 +123,5 @@ class ClientController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
-    }
-    
-    
-    public function actionValidate() {
-		
-        $model = new \backend\models\OrderClientForm;
-		
-		if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
-			Yii::$app->response->format = Response::FORMAT_JSON;
-			return ActiveForm::validate($model);
-		}
-	}
-    
-    public function actionAutocomplite($term)
-    {
-        $results = [];
-        
-        /*
-        $products = OrderClient::find()
-                        ->where(['or',
-                            ['like', 'name', $term],
-                            ['like', 'phone', $term],
-                            ['like', 'email', $term],
-                            ])
-                        ->limit(10)
-                        ->all();
-        */
-        $products = (new \yii\db\Query())
-                    ->select(['id', 'name', 'phone', 'email'])
-                    ->from('order__client')
-                    ->where(['or', 
-                            ['like', 'name', $term],
-                            ['like', 'phone', $term],
-                            ['like', 'email', $term],
-                            ])
-                    ->limit(10)
-                    ->all();
-            
-        foreach ($products AS $p) {
-            $results[] = [
-                //'value' => $p['id'], 
-                'id' => $p['id'], 
-                'label' => $p['name'] . ' ' . $p['email'] . ' ' . $p['phone']
-            ];
-        }
-        
-        return json_encode($results);
     }
 }

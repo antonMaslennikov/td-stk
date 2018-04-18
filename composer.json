@@ -45,6 +45,11 @@
             "url": "https://asset-packagist.org"
         }
 	],
+	"autoload": {
+		"files": [
+			"vendor/functions/functions.php"
+		]
+	},
 	"files": [
 		"vendor/functions/functions.php"
     ]

@@ -25,17 +25,23 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= DetailView::widget([
         'model' => $model,
-        'formatter' => [
-            'class'=>'yii\i18n\Formatter', 
-            'dateFormat'=>'d MMM yyyy г.', 
-            'currencyCode' => 'RUR',
-            'locale'=>'ru'
-        ],
         'attributes' => [
             'id',
             'name',
             'email:email',
             'phone',
+            'org',
+            'bank',
+            'bik',
+            'ks',
+            'rs',
+            'kpp',
+            'inn',
+            'dir',
+            'address',
+            'orgn',
+            'okpo',
+            'okato',
             'created_at:date',
         ],
     ]) ?>

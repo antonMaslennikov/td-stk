@@ -114,6 +114,10 @@ class DocumentController extends Controller
     
     public function actionDownload($id)
     {
+        $doc = Document::findOne(['id' => $id]);
+        
+        $doc->download();
+        
         exit('download');
     }
 

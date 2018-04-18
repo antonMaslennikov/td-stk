@@ -23,7 +23,31 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'phone') ?>
 
-    <?= $form->field($model, 'created_at') ?>
+    <?= $form->field($model, 'org') ?>
+
+    <?php // echo $form->field($model, 'bank') ?>
+
+    <?php // echo $form->field($model, 'bik') ?>
+
+    <?php // echo $form->field($model, 'ks') ?>
+
+    <?php // echo $form->field($model, 'rs') ?>
+
+    <?php // echo $form->field($model, 'kpp') ?>
+
+    <?php // echo $form->field($model, 'inn') ?>
+
+    <?php // echo $form->field($model, 'dir') ?>
+
+    <?php // echo $form->field($model, 'address') ?>
+
+    <?php // echo $form->field($model, 'orgn') ?>
+
+    <?php // echo $form->field($model, 'okpo') ?>
+
+    <?php // echo $form->field($model, 'okato') ?>
+
+    <?php // echo $form->field($model, 'created_at') ?>
 
     <div class="form-group">
         <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>
