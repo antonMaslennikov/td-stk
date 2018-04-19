@@ -4,6 +4,8 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use kartik\date\DatePicker;
 
+use \backend\models\Document;
+
 /* @var $this yii\web\View */
 /* @var $model backend\models\Document */
 /* @var $form yii\widgets\ActiveForm */
@@ -17,6 +19,8 @@ use kartik\date\DatePicker;
 
     <?= $form->field($model, 'number')->textInput() ?>
 
+    <?= $form->field($model, 'payment_type')->dropDownList(Document::getPaymentTypes()) ?>
+   
     <?= $form->field($model, 'date')->widget(DatePicker::classname(), [
         'removeButton' => false,
         'options' => ['placeholder' => 'Дата', 'value' => date('Y-m-d')],

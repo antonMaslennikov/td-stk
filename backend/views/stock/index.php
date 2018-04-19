@@ -12,16 +12,14 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="stock-item-index">
     
-    <? /*=GridView::widget([
+    <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
+        //'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'product_id',
+            'name_ru',
             'quantity',
-
-            ['class' => 'yii\grid\ActionColumn'],
         ],
-    ]);*/ ?>
+    ]); ?>
 </div>

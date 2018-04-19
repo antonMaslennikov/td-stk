@@ -8,12 +8,15 @@
 	use yii\widgets\InputWidget;
 	
     use backend\models\CreateBillForm;
+    use backend\models\CreateAktForm;
+        
     use backend\models\Document;
 
 	class CreateDocumentWidget extends Widget
 	{   
         public $type = 1;
         public $order;
+        public $parent;
         
         public function init()
 		{
@@ -41,16 +44,16 @@
                 return $this->render('CreateBillForm', ['model' => $model, 'order' => $this->order]);
             }
             /**
-             * Форма создания акта
+             * Форма создания акта или накладной
              */
-            elseif ($this->type == Document::TYPE_AKT) 
+            elseif ($this->type == Document::TYPE_AKT || $this->type == Document::TYPE_NAKL) 
             {
-            }
-            /**
-             * Форма создания накладной
-             */
-            elseif ($this->type == Document::TYPE_NAKL) 
-            {
+                $model = new CreateAktForm;
+                $model->type = $this->type;
+                $model->parent_id = $this->parent->id;
+                $model->name = ($this->type == Document::TYPE_AKT ? 'Акт' : 'Накладная') . ' к заказу #' . $this->parent->order_id;                
+                
+                return $this->render('CreateAktForm', ['model' => $model, 'parent' => $this->parent]);
             }
         }
     }

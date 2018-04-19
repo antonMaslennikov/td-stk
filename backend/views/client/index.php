@@ -13,7 +13,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="order-client-index">
 
     <p>
-        <?= Html::a('Добавить нового', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Добавить нового', ['add'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= GridView::widget([

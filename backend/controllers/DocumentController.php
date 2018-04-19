@@ -8,6 +8,7 @@ use backend\models\DocumentSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\base\DynamicModel;
 
 /**
  * DocumentController implements the CRUD actions for Document model.
@@ -66,6 +67,8 @@ class DocumentController extends Controller
     {
         if (Yii::$app->request->post('CreateBillForm'))
             $model = new \backend\models\CreateBillForm;
+        elseif (Yii::$app->request->post('CreateAktForm'))
+            $model = new \backend\models\CreateAktForm;
 
         if ($model->load(Yii::$app->request->post())) {
             if ($d = $model->create()) {
@@ -112,6 +115,10 @@ class DocumentController extends Controller
         return $this->redirect(['index']);
     }
     
+    /**
+     * Скачать документ в формате xlsx
+     * @param integer $id номер документа
+     */
     public function actionDownload($id)
     {
         $doc = Document::findOne(['id' => $id]);
@@ -119,6 +126,31 @@ class DocumentController extends Controller
         $doc->download();
         
         exit('download');
+    }
+    
+    /**
+     * Оплата счёта
+     */
+    public function actionPay()
+    {
+        $model = DynamicModel::validateData(Yii::$app->request->post(), [
+            [['id', 'sum'], required],
+            ['sum', 'number'],
+        ]);
+
+        if ($model->hasErrors()) {
+            // валидация завершилась с ошибкой
+            foreach ($model->getErrors() as $key => $value) {
+				Yii::$app->session->setFlash('error', $value[0]);
+			}
+        } else {
+            // Валидация успешно выполнена
+            if ($D = Document::findOne($model->id)) {
+                $D->pay($model->sum);
+            }
+        }
+        
+        return $this->redirect(['view', 'id' => $model->id]);
     }
 
     /**

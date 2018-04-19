@@ -17,9 +17,17 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <div class="order-index">
 
+    <?php \Yii::$app->formatter->locale = 'ru-RU'; ?>
+   
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'formatter' => [
+            'class'=>'yii\i18n\Formatter', 
+            'dateFormat'=>'d MMM yyyy г.', 
+            'currencyCode' => 'RUR',
+            'locale'=>'ru'
+        ],
         'layout'=>"{items}\n{pager}",
         'columns' => [
             //['class' => 'yii\grid\SerialColumn'],
@@ -53,6 +61,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
                 'filter' => false
             ],
+            'client.phone',
             [
                 'attribute' => 'payment_type',
                 'content' => function($data){
@@ -67,17 +76,29 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
                 'filter' => AdminOrder::getDTList()
             ],
-            'sum',
-            'delivery_cost',
+            'sum:currency',
+            'delivery_cost:currency',
             [
                 'attribute' => 'created_at',
-                'filter' => false
+                'filter' => false,
+                'format' => 'date',
+            ],
+            [
+                'attribute' => 'delivery_date',
+                'filter' => false,
+                'content' => function($data){
+                    return $data->delivery_date != '0000-00-00' ? \Yii::$app->formatter->asDate($data->delivery_date) : '';
+                }   
             ],
             [
                 'attribute' => 'payment_confirm',
                 'content'=>function($data){
 					return Html::tag('span', $data->payment_confirm > 0 ? 'оплачен' : 'не оплачен', ['class' => 'label label-' . ($data->payment_confirm > 0 ? 'success' : 'danger')]);
 				},
+            ],
+            [
+                'attribute' => 'manager',
+                'filter' => false,
             ],
             [
                 'class' => 'yii\grid\ActionColumn',

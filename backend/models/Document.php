@@ -8,13 +8,15 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+
+use common\models\OrderClient;
     
 /**
  * This is the model class for table "document".
  *
  * @property int $id
  * @property int $type
- * @property int $parent
+ * @property int $parent_id
  * @property string $direction
  * @property int $name
  * @property int $number
@@ -28,6 +30,10 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
  */
 class Document extends \yii\db\ActiveRecord
 {
+    public $quantity;
+    public $order_status;
+    public $manager;
+    
     const TYPE_BILL = 1;
     const TYPE_AKT  = 2;
     const TYPE_NAKL = 3;
@@ -35,12 +41,23 @@ class Document extends \yii\db\ActiveRecord
     const FOR_SUP = 0;
     const FOR_CLIENT = 1;
     
+    const PT_CASH = 0;
+    const PT_CARD = 1;
+    
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
         return 'document';
+    }
+    
+    public static function getPaymentTypes()
+    {
+        return [
+            self::PT_CASH => 'Наличные',
+            self::PT_CARD  => 'Наличные на карту',
+        ];
     }
     
     public static function getTypes()
@@ -59,10 +76,10 @@ class Document extends \yii\db\ActiveRecord
     {
         return [
             [['name', 'number', 'client_id'], 'required'],
-            [['order_id'], 'integer'],
+            [['order_id', 'manager_id'], 'integer'],
             ['type', 'default', 'value' => Document::TYPE_BILL],
             ['direction', 'default', 'value' => Document::FOR_CLIENT],
-            [['date', 'type', 'direction','payment_type', 'sum', 'positions'], 'safe'],
+            [['date', 'type', 'direction','payment_type', 'sum', 'positions', 'quantity', 'order_status', 'manager'], 'safe'],
             [['name', 'number'], 'string', 'max' => 255],
         ];
     }
@@ -81,10 +98,12 @@ class Document extends \yii\db\ActiveRecord
             'number' => 'Номер',
             'date' => 'Дата',
             'order_id' => 'Заказ',
+            'quantity' => 'Количество',
             'sum' => 'Сумма',
             'sum_payed' => 'Сумма оплачено',
             'payed' => 'Оплачено',
             'payment_type' => 'Тип оплаты',
+            'manager' => 'Менеджер',
         ];
     }
     
@@ -92,6 +111,18 @@ class Document extends \yii\db\ActiveRecord
         return $this->hasMany(DocumentPosition::className(), ['document_id' => 'id']);
     }
     
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+
+            if ($insert) {
+                $this->manager_id = \Yii::$app->user->identity->getId();
+            }
+
+            return true;
+        }
+        return false;
+    }
     
     public function download()
     {
@@ -115,9 +146,21 @@ class Document extends \yii\db\ActiveRecord
         }   
     }
     
+    /**
+     * Получить дочерние документы
+     */
+    public function getChildrens()
+    {
+        $childrens = Document::find()->where(['parent_id' => $this->id])->indexBy('type')->all();
+        
+        return $childrens;
+    }
+    
     protected function getBill()
     {
         \Yii::$app->formatter->locale = 'ru-RU';
+        
+        $rekv = OrderClient::find()->where(['id' => 1])->asArray()->one();
         
         $spreadsheet = new Spreadsheet;
         $sheet = $spreadsheet->getActiveSheet();
@@ -126,18 +169,18 @@ class Document extends \yii\db\ActiveRecord
         
         $row = 2;
         
-        $sheet->setCellValue('A' . $row, self::$rekv[0]['org']);
+        $sheet->setCellValue('A' . $row, $rekv['org']);
         $sheet->getStyle('A' . $row)->applyFromArray(['font' => ['bold' => true]]);
         $sheet->mergeCells('A' . $row . ':J' . $row);
         $row++;
-        $sheet->setCellValue('A' . $row, self::$rekv[0]['address']);
+        $sheet->setCellValue('A' . $row, $rekv['address']);
         $sheet->mergeCells('A' . $row . ':J' . $row);
         
         $row += 2;
         
-        $sheet->setCellValue('A' . $row, 'ИНН ' . self::$rekv[0]['inn']);
+        $sheet->setCellValue('A' . $row, 'ИНН ' . $rekv['inn']);
         $sheet->mergeCells('A' . $row . ':C' . $row);
-        $sheet->setCellValue('D' . $row, 'КПП ' . self::$rekv[0]['kpp']);
+        $sheet->setCellValue('D' . $row, 'КПП ' . $rekv['kpp']);
         $sheet->mergeCells('D' . $row . ':F' . $row);
         $sheet->mergeCells('G' . $row . ':J' . $row);
         $sheet->getStyle('A' . $row . ':J' . $row)->applyFromArray(['borders' => ['top' => ['borderStyle' => Border::BORDER_THIN,],],]);
@@ -148,7 +191,7 @@ class Document extends \yii\db\ActiveRecord
         
         $sheet->setCellValue('A' . $row, 'Получатель');
         $sheet->setCellValue('G' . $row, 'Сч. №');
-        $sheet->setCellValue('H' . $row, self::$rekv[0]['rs']);
+        $sheet->setCellValue('H' . $row, $rekv['rs']);
         $sheet->mergeCells('A' . $row . ':F' . $row);
         $sheet->mergeCells('G' . $row . ':G' . ($row + 1));
         $sheet->mergeCells('H' . $row . ':J' . ($row + 1));
@@ -160,7 +203,7 @@ class Document extends \yii\db\ActiveRecord
         
         $row++;
         
-        $sheet->setCellValue('A' . $row, self::$rekv[0]['org']);
+        $sheet->setCellValue('A' . $row, $rekv['org']);
         $sheet->mergeCells('A' . $row . ':F' . $row);
         
         $row++;
@@ -168,7 +211,7 @@ class Document extends \yii\db\ActiveRecord
         $sheet->setCellValue('A' . $row, 'Банк получателя');
         $sheet->mergeCells('A' . $row . ':F' . $row);
         $sheet->setCellValue('G' . $row, 'БИК');
-        $sheet->setCellValue('H' . $row, self::$rekv[0]['bik']);
+        $sheet->setCellValue('H' . $row, $rekv['bik']);
         $sheet->mergeCells('H' . $row . ':J' . $row);
         $sheet->getStyle('G' . $row)->applyFromArray(['alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER,]]);
         $sheet->getStyle('A' . $row . ':J' . $row)->applyFromArray(['borders' => ['top' => ['borderStyle' => Border::BORDER_THIN,],],]);
@@ -177,10 +220,10 @@ class Document extends \yii\db\ActiveRecord
         
         $row++;
         
-        $sheet->setCellValue('A' . $row, self::$rekv[0]['bank']);
+        $sheet->setCellValue('A' . $row, $rekv['bank']);
         $sheet->mergeCells('A' . $row . ':F' . $row);
         $sheet->setCellValue('G' . $row, 'Сч. №');
-        $sheet->setCellValue('H' . $row, self::$rekv[0]['ks']);
+        $sheet->setCellValue('H' . $row, $rekv['ks']);
         $sheet->mergeCells('H' . $row . ':J' . $row);
         $sheet->getStyle('G' . $row)->applyFromArray(['alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER,]]);
         $sheet->getStyle('A' . $row . ':J' . $row)->applyFromArray(['borders' => ['bottom' => ['borderStyle' => Border::BORDER_THIN,],],]);
@@ -289,7 +332,7 @@ class Document extends \yii\db\ActiveRecord
         $row += 3;
         
         $sheet->setCellValue('A' . $row, 'директор');
-        $sheet->setCellValue('H' . $row, '/' . self::$rekv[0]['dir'] . '/');
+        $sheet->setCellValue('H' . $row, '/' . $rekv['dir'] . '/');
         $sheet->mergeCells('A' . $row . ':D' . $row);
         $sheet->mergeCells('H' . $row . ':J' . $row);
         $sheet->getStyle('H' . $row)->applyFromArray($styles['center']);
@@ -326,5 +369,16 @@ class Document extends \yii\db\ActiveRecord
     protected function getNakl()
     {
         
+    }
+    
+    public function pay($sum)
+    {
+        $this->sum_payed += $sum;
+        if ($this->sum_payed >= $this->sum) {
+            $this->payed = 1;
+        }
+        $this->save();
+        
+        return true;
     }
 }

@@ -5,6 +5,7 @@ use yii\helpers\Url;
 use yii\widgets\DetailView;
 
 use backend\models\Document;
+use backend\components\CreateDocumentWidget;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\Document */
@@ -16,12 +17,39 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="document-view">
 
     <div class="row">
-        <div class="col-sm-6">
-            
+        <div class="col-sm-4">
             <?= Html::a('Скачать XLS', ['download', 'id' => $model->id], ['class' => 'btn btn-info']) ?>
+        </div>
+        
+        <div class="col-sm-4">
+            <?php if ($model->type == Document::TYPE_BILL): ?>
+                
+                <?php $childrens = $model->childrens; ?>
+                
+                <?php if ($childrens[Document::TYPE_AKT]): ?>
+                    <?= Html::a('Открыть акт', Url::to(['document/view', 'id' => $childrens[Document::TYPE_AKT]->id]), ['class' => 'btn btn-default']) ?>
+                <?php else: ?>
+                    <?= Html::a('Создать акт', '#addAktModal', ['data-toggle' => 'modal', 'class' => 'btn btn-default']) ?>
+                <?php endif; ?>
+                <?php if ($childrens[Document::TYPE_NAKL]): ?>
+                    <?= Html::a('Открыть накладную', Url::to(['document/view', 'id' => $childrens[Document::TYPE_NAKL]->id]), ['class' => 'btn btn-default']) ?>
+                <?php else: ?>
+                    <?= Html::a('Создать накладную', '#addNaklModal', ['data-toggle' => 'modal', 'class' => 'btn btn-default']) ?>
+                <?php endif; ?>
+                
+                <?= CreateDocumentWidget::widget(['type' => Document::TYPE_AKT, 'parent' => $model]) ?>
+            
+                <?= CreateDocumentWidget::widget(['type' => Document::TYPE_NAKL, 'parent' => $model]) ?>
+            
+            <?php elseif (($model->type == Document::TYPE_AKT || $model->type == Document::TYPE_NAKL) && $model->parent_id): ?>
+                           
+                <?= Html::a('Открыть счёт', Url::to(['document/view', 'id' => $model->parent_id]), ['class' => 'btn btn-default']) ?>
+                           
+            <?php endif; ?>
             
         </div>
-        <div class="col-sm-6">
+        
+        <div class="col-sm-4">
             <div class="pull-right">
             <?= Html::a('Изменить', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
             <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
@@ -63,14 +91,48 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'payed',
                 'format' => 'raw',
                 'value' => function($data){
-                    return $data->payed ? '<span class="label label-success">оплачен</span>' : '<span class="label label-danger">не оплачен</span>';
+                    return $data->payed ? '<span class="label label-success">оплачен</span>' : ($data->sum_payed > 0 ? '<span class="label label-warning">оплачен частично</span>' : '<span class="label label-danger">не оплачен</span>');
                 }
             ]
             ,
-            //'payment_type',
+            [
+                'attribute' => 'payment_type',
+                'value' => function($data){
+                    return Document::getPaymentTypes()[$data->payment_type];
+                }
+            ],
         ],
     ]) ?>
+    
+    <?php if ($model->type == Document::TYPE_BILL): ?>
+        <div class="row">
+            <div class="col-sm-4">
+                <h4>Оплатить счёт</h4>
+                
+                <?php if ($model->sum - $model->sum_payed > 0): ?>
+                    <?= Html::beginForm(['document/pay'], 'post') ?>
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="sum" placeholder="укажите сумму" value="<?= $model->sum - $model->sum_payed ?>">
+                        <div class="input-group-btn">
+                          <button type="submit" class="btn btn-info">Оплатить счёт</button>
+                        </div>
+                        <?= Html::hiddenInput('id', $model->id) ?>
+                    </div>
+                    <?= Html::endForm() ?>
+                <?php else: ?>
+                    Счёт оплачен полностью
+                <?php endif; ?>
+            </div>
+        </div>
+        <br>
+    <?php endif; ?>
 
+    <div class="row">
+        <div class="col-sm-12">
+            <h4>Позиции</h4>
+        </div>
+    </div>
+   
     <table id="example1" class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
         <tr>
             <th>#</th>

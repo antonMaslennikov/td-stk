@@ -11,15 +11,15 @@ use backend\models\Document;
  * DocumentSearch represents the model behind the search form of `backend\models\Document`.
  */
 class DocumentSearch extends Document
-{
+{    
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['id', 'parent', 'name', 'number', 'order_id', 'sum', 'sum_payed', 'payed'], 'integer'],
-            [['type', 'direction', 'date', 'payment_type'], 'safe'],
+            [['id', 'parent_id', 'name', 'number', 'order_id', 'sum', 'sum_payed', 'payed'], 'integer'],
+            [['type', 'direction', 'date', 'payment_type', 'quantity', 'order_status'], 'safe'],
         ];
     }
 
@@ -41,7 +41,12 @@ class DocumentSearch extends Document
      */
     public function search($params)
     {
-        $query = Document::find();
+        $query = Document::find()
+                    ->select('{{document}}.*, COUNT({{document__position}}.`id`) AS quantity, {{order}}.`status` AS order_status, {{user}}.`username` AS manager')
+                    ->joinWith('positions')
+                    ->leftJoin('order', '{{order}}.`id` = {{document}}.`order_id`')
+                    ->leftJoin('user', '{{user}}.`id` = {{document}}.`manager_id`')
+                    ->groupBy('{{document}}.id');
 
         // add conditions that should always apply here
 
@@ -61,7 +66,7 @@ class DocumentSearch extends Document
         $query->andFilterWhere([
             'id' => $this->id,
             'type' => $this->type,
-            //'parent' => $this->parent,
+            //'parent_id' => $this->parent_id,
             'name' => $this->name,
             'number' => $this->number,
             'date' => $this->date,
@@ -69,10 +74,11 @@ class DocumentSearch extends Document
             //'sum' => $this->sum,
             //'sum_payed' => $this->sum_payed,
             'payed' => $this->payed,
+            '{{document}}.payment_type' => $this->payment_type,
+            'direction' => $this->direction,
+            'manager_id' => $this->manager_id,
         ]);
 
-        $query->andFilterWhere(['like', 'direction', $this->direction])
-            ->andFilterWhere(['like', 'payment_type', $this->payment_type]);
 
         return $dataProvider;
     }

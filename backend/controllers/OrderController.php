@@ -58,13 +58,8 @@ class OrderController extends Controller
      */
     public function actionView($id)
     {
-        $commentForm = new \backend\models\OrderCommentForm;
-        $paymentForm = new \backend\models\OrderPaymentForm;
-        
         return $this->render('view', [
             'model' => $this->findModel($id),
-            'commentForm' => $commentForm,
-            'paymentForm' => $paymentForm,
         ]);
     }
 
@@ -193,10 +188,30 @@ class OrderController extends Controller
     
     public function actionSetpayment()
     {
-        $model = new \backend\models\OrderPaymentForm;
+        $model = new \backend\models\OrderPayForm;
         
         if ($model->load(Yii::$app->request->post())) {
             if ($item = $model->setPayment())
+                return $this->redirect(['view', 'id' => $model->order_id]);
+        }
+    }
+    
+    public function actionSavedelivery()
+    {
+        $model = new \backend\models\OrderDeliveryForm;
+        
+        if ($model->load(Yii::$app->request->post())) {
+            if ($item = $model->saveData())
+                return $this->redirect(['view', 'id' => $model->order_id]);
+        }
+    }
+    
+    public function actionSavepayment()
+    {
+        $model = new \backend\models\OrderPaymentForm;
+        
+        if ($model->load(Yii::$app->request->post())) {
+            if ($item = $model->saveData())
                 return $this->redirect(['view', 'id' => $model->order_id]);
         }
     }

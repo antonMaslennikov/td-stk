@@ -90,7 +90,8 @@ class OrderForm extends Model
         $O->delivery_cost = $this->delivery_cost;
         $O->address_id    = $this->address_id;
         $O->sum = 0;
-        
+        $O->manager_id    = \Yii::$app->user->identity->getId();
+            
         return $O->save() ? $O : null;
     }
 }

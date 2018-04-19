@@ -4,6 +4,8 @@ namespace common\models;
 
 use Yii;
 
+use backend\components\Geo;
+
 /**
  * This is the model class for table "order__address".
  *
@@ -33,6 +35,16 @@ class OrderAddress extends \yii\db\ActiveRecord
             [['country', 'city', 'client_id'], 'integer'],
             [['address'], 'string', 'max' => 255],
         ];
+    }
+    
+    public function getCountry_name()
+    {
+        return Geo::getCountryName($this->country);
+    }
+    
+    public function getCity_name()
+    {
+        return Geo::getCityName($this->city);
     }
 
     /**

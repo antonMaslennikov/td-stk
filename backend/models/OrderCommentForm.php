@@ -6,7 +6,6 @@ use Yii;
 use yii\base\Model;
 use yii\helpers\ArrayHelper;
 
-use common\models\Order;
 use common\models\OrderComments;
 
 /**

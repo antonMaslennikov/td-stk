@@ -20,10 +20,11 @@ class OrderClientForm extends Model
     
     public function rules()
     {
-        return ArrayHelper::merge(OrderClient::rules(), [
+        return [
             ['email', 'unique', 'targetClass' => '\common\models\OrderClient', 'message' => 'Этот адрес электронной почты уже занят.'],
             ['phone', 'unique', 'targetClass' => '\common\models\OrderClient', 'message' => 'Этот телефон уже занят.'],
-        ]);
+            ['name', 'string', 'max' => 255]
+        ];
     }
     
     /**

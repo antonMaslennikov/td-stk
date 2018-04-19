@@ -19,7 +19,7 @@ class OrderSearch extends Order
     {
         return [
             [['id', 'client_id', 'address_id'], 'integer'],
-            [['payment_type', 'delivery_type', 'created_at'], 'safe'],
+            [['payment_type', 'delivery_type', 'created_at', 'manager'], 'safe'],
         ];
     }
 
@@ -41,7 +41,9 @@ class OrderSearch extends Order
      */
     public function search($params)
     {
-        $query = Order::find();
+        $query = Order::find()
+                    ->select('{{order}}.*, {{user}}.`username` AS manager')
+                    ->leftJoin('user', '{{user}}.`id` = {{order}}.`manager_id`');
 
         // add conditions that should always apply here
 

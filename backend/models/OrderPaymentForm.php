@@ -6,9 +6,6 @@ use Yii;
 use yii\base\Model;
 use yii\helpers\ArrayHelper;
 
-use common\models\Order;
-use common\models\OrderComments;
-
 /**
  *
  */
@@ -16,13 +13,11 @@ class OrderPaymentForm extends Model
 {
 	public $order_id;
     public $payment_type;
-    public $sum;
     
     public function rules()
     {
         return [
-            [['payment_type', 'order_id', 'sum'], 'required'],
-            ['sum', 'number'],
+            [['payment_type', 'order_id'], 'required'],
             ['payment_type', 'in', 'range' => array_keys(Order::$paymentTypes)],
         ];
     }
@@ -33,33 +28,29 @@ class OrderPaymentForm extends Model
     public function attributeLabels()
     {
         return [
-            'sum' => 'Оплатить заказ'
         ];
     }
     
-	public function setPayment()
+    public function saveData()
     {
         if (!$this->validate()) {
-			foreach ($this->getErrors() as $key => $value) {
+            foreach ($this->getErrors() as $key => $value) {
 				Yii::$app->session->setFlash('error', $value[0]);
 			}
             return null;
         }
         
-        $O = Order::find()->where(['id' => $this->order_id])->one();
+        $O = Order::findOne($this->order_id);
         
-        if ($O->payment_confirm == 0)
-        {
-            $O->log('set_payment', $this->sum, $this->payment_type);
-            
-            if ($O->alreadyPayed >= $O->sum + $O->delivery_cost) {
-                $O->payment_confirm = 1;
-                $O->save();
-            }
-            
-            Yii::$app->session->setFlash('success', 'Заказ оплачен на ' . $this->sum . ' р.');
+        $prev_pt = $O->payment_type;
+        
+        $O->payment_type = $this->payment_type;
+        $O->save();
+        
+        if ($prev_pt != $this->payment_type) {
+            $O->log('change_payment_type', $this->payment_type, $prev_pt);
         }
         
-        return true;
+        return $O->id;
     }
 }

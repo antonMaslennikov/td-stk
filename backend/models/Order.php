@@ -19,6 +19,8 @@ use backend\models\Document;
  */
 class Order extends \common\models\Order
 {
+    public $manager;
+    
     /**
      * @inheritdoc
      */
