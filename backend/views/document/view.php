@@ -11,7 +11,7 @@ use backend\components\CreateDocumentWidget;
 /* @var $model backend\models\Document */
 
 $this->title = Document::getTypes()[$model->type] . ': ' . $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Документы', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Документы', 'url' => ['index', 'DocumentSearch[type]' => $model->type, 'DocumentSearch[direction]' => $model->direction]];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="document-view">

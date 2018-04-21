@@ -65,11 +65,13 @@ class Product extends \yii\db\ActiveRecord
 			'category' => 'Категория',
             'art' => 'Артикул',
             'color_id' => 'Цвет',
+            'size_id' => 'Размер',
             'picture' => 'Picture ID',
             'barcode' => 'Штрихкод',
             'status' => 'Статус',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
+            'quantity' => 'Количество на складе'
         ];
     }
 	

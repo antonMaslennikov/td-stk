@@ -16,6 +16,7 @@ class ProductSearch extends Product
     public $material;
     public $size;
     
+    public $onstock = false;
     
     /**
      * @inheritdoc
@@ -46,7 +47,9 @@ class ProductSearch extends Product
      */
     public function search($params)
     {
-        $query = Product::find();
+        $query = Product::find()
+                    ->with('color')
+                    ->with('size');
 
         // add conditions that should always apply here
 
@@ -66,6 +69,9 @@ class ProductSearch extends Product
         $query->joinWith('material');
         $query->joinWith('size');
         
+        if ($this->onstock) {
+            $query->andWhere("`quantity` > '0'");
+        }
 
         // grid filtering conditions
         $query->andFilterWhere([
