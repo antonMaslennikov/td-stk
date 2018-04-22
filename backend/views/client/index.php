@@ -40,7 +40,21 @@ $this->params['breadcrumbs'][] = $this->title;
             //'okato',
             //'created_at',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'header'=>'', 
+                'headerOptions' => ['width' => '30'],
+                'template' => '{view} {update} {delete}',
+                'buttons' => [
+                    'delete' => function ($url,$model) {
+                        if ($model->id == 1) {
+                            return '';
+                        } else {
+                            return Html::a('<span class="glyphicon glyphicon-trash"></span>', ['delete', 'id' => $model->id]);
+                        }
+                    },
+                ],
+            ],
         ],
     ]); ?>
 </div>

@@ -22,6 +22,7 @@ elseif (Yii::$app->request->get('DocumentSearch')['type'] == Document::TYPE_NAKL
 
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+
 <div class="document-index">
 
     <?php if (Yii::$app->request->get('DocumentSearch')['type'] == Document::TYPE_BILL): ?>
@@ -38,7 +39,11 @@ $this->params['breadcrumbs'][] = $this->title;
             }
         ?>
     </p>
+    <?php endif; ?>
     
+    <?php echo $this->render('_search', ['model' => $searchModel]); ?>
+    
+    <?php if (Yii::$app->request->get('DocumentSearch')['type'] == Document::TYPE_BILL): ?>
     <ul class="nav nav-tabs">
         <li <?php if (Yii::$app->request->get('DocumentSearch')['payment_type'] == Document::PT_CASH): ?>class="active"<?php endif; ?>>
             <?= Html::a('Наличные', Url::to(['index', 'DocumentSearch[type]' => Yii::$app->request->get('DocumentSearch')['type'], 'DocumentSearch[direction]' => Yii::$app->request->get('DocumentSearch')['direction'], 'DocumentSearch[payment_type]' => Document::PT_CASH])) ?>
@@ -47,7 +52,6 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= Html::a('Наличные на карту', Url::to(['index', 'DocumentSearch[type]' => Yii::$app->request->get('DocumentSearch')['type'], 'DocumentSearch[direction]' => Yii::$app->request->get('DocumentSearch')['direction'], 'DocumentSearch[payment_type]' => Document::PT_CARD])) ?>
         </li>
     </ul>
-    
     <?php endif; ?>
     
     <?= GridView::widget([
@@ -75,6 +79,13 @@ $this->params['breadcrumbs'][] = $this->title;
             'quantity',
             'sum:currency',
             'sum_payed:currency',
+            [
+                'attribute' => 'payed',
+                'format' => 'raw',
+                'content'=>function($data){
+					return Html::tag('span', $data->payed > 0 ? 'оплачен' : 'не оплачен', ['class' => 'label label-' . ($data->payed > 0 ? 'success' : 'danger')]);
+				},
+            ],
             [
                 'attribute' => 'order_id',
                 'format' => 'raw',

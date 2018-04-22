@@ -2,48 +2,65 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use kartik\date\DatePicker;
+use backend\models\Document;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\DocumentSearch */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
-<div class="document-search">
+<br>
+
+<div class="document-search row">
 
     <?php $form = ActiveForm::begin([
         'action' => ['index'],
         'method' => 'get',
     ]); ?>
-
-    <?= $form->field($model, 'id') ?>
-
-    <?= $form->field($model, 'type') ?>
-
-    <?= $form->field($model, 'parent') ?>
-
-    <?= $form->field($model, 'direction') ?>
-
-    <?= $form->field($model, 'name') ?>
-
-    <?php // echo $form->field($model, 'number') ?>
-
-    <?php // echo $form->field($model, 'date') ?>
-
-    <?php // echo $form->field($model, 'order_id') ?>
-
-    <?php // echo $form->field($model, 'sum') ?>
-
-    <?php // echo $form->field($model, 'sum_payed') ?>
-
-    <?php // echo $form->field($model, 'payed') ?>
-
-    <?php // echo $form->field($model, 'payment_type') ?>
-
-    <div class="form-group">
-        <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>
-        <?= Html::resetButton('Reset', ['class' => 'btn btn-default']) ?>
+    
+    <div class="col-sm-2">
+         <?= $form->field($model, 'onlypayed')->checkbox() ?>
+    </div>
+    <div class="col-sm-2">
+        <?= $form->field($model, 'manager')->dropDownList(Document::getManagerList(), ['prompt' => 'Менеджер...'])->label(false) ?>
+    </div>
+    <div class="col-sm-2">
+        
+        <?= $form->field($model, 'dateStart')->widget(DatePicker::classname(), [
+            'options' => ['placeholder' => 'Дата С'],
+            'pluginOptions' => [
+                'format' => 'yyyy-mm-dd',
+                'todayHighlight' => true,
+                'autoclose'=>true,
+            ]
+        ])->label(false);
+        ?>
+    </div>     
+    <div class="col-sm-2">
+        
+        <?= $form->field($model, 'dateEnd')->widget(DatePicker::classname(), [
+            'options' => ['placeholder' => 'Дата До'],
+            'pluginOptions' => [
+                'format' => 'yyyy-mm-dd',
+                'todayHighlight' => true,
+                'autoclose'=>true,
+            ]
+        ])->label(false);
+        ?>
+        
+    </div>
+    <div class="col-sm-3 form-group">
+        
+         <?= $form->field($model, 'search')->textInput(['placeholder' => 'id, номер документа, инн'])->label(false) ?>
+    </div>
+    <div class="col-sm-1">
+        <?= Html::submitButton('Выбрать', ['class' => 'btn btn-primary pull-right']) ?>
     </div>
 
+         <?= $form->field($model, 'type')->hiddenInput()->label(false) ?>
+         <?= $form->field($model, 'direction')->hiddenInput()->label(false) ?>
+   
     <?php ActiveForm::end(); ?>
 
 </div>

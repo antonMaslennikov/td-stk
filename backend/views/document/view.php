@@ -85,6 +85,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $data->order_id ? Html::a($data->order_id, Url::to(['order/view', 'id' => $data->order_id])) : "&mdash;";
                 }
             ],
+            [
+                'attribute' => 'client_id',
+                'format' => 'raw',
+                'value' => function($data){
+                    return $data->client_id ? Html::a($data->client->name, Url::to(['client/view', 'id' => $data->client_id])) : "&mdash;";
+                }
+            ],
             'sum:currency',
             'sum_payed:currency',
             [

@@ -98,6 +98,7 @@ class Document extends \yii\db\ActiveRecord
             'number' => 'Номер',
             'date' => 'Дата',
             'order_id' => 'Заказ',
+            'client_id' => 'Клиент',
             'quantity' => 'Количество',
             'sum' => 'Сумма',
             'sum_payed' => 'Сумма оплачено',
@@ -109,6 +110,10 @@ class Document extends \yii\db\ActiveRecord
     
     public function getPositions(){
         return $this->hasMany(DocumentPosition::className(), ['document_id' => 'id']);
+    }
+    
+    public function getClient(){
+        return $this->hasOne(OrderClient::className(), ['id' => 'client_id']);
     }
     
     public function beforeSave($insert)
@@ -154,6 +159,23 @@ class Document extends \yii\db\ActiveRecord
         $childrens = Document::find()->where(['parent_id' => $this->id])->indexBy('type')->all();
         
         return $childrens;
+    }
+    
+    public function getManagerList()
+    {
+        $rs = (new \yii\db\Query())
+                        ->select(['u.id', 'u.fio', 'u.username'])
+                        ->from(Document::tableName() . ' d' . ', ' . \common\models\User::tableName() . 'u')
+                        ->where(['d.manager_id' => 'u.id'])
+                        ->all();
+        
+        $managers = [];
+        
+        foreach ($rs AS $m) {
+            $managers[$m['id']] = $m['fio'] ? $m['fio'] : $m['username'];
+        }
+        
+        return $managers;
     }
     
     protected function getBill()
@@ -243,7 +265,7 @@ class Document extends \yii\db\ActiveRecord
         
         $sheet->setCellValue('A' . $row, 'Плательщик');
         $sheet->mergeCells('A' . $row . ':B' . $row);
-        $sheet->setCellValue('C' . $row, "Бла-бла-бла реквизиты клиента");
+        $sheet->setCellValue('C' . $row, $this->client->org . ', ' . $this->client->address . ',  ИНН ' . $this->client->inn . ', КПП '  . $this->client->inn . ', р/сч ' . $this->client->rs . ', банк ' . $this->client->bank . ', корр.счет ' . $this->client->ks . ', БИК ' . $this->client->bik);
         $sheet->mergeCells('C' . $row . ':J' . $row);
         
         $row += 2;
@@ -363,12 +385,215 @@ class Document extends \yii\db\ActiveRecord
     
     protected function getAkt()
     {
+        \Yii::$app->formatter->locale = 'ru-RU';
         
+        $rekv = OrderClient::find()->where(['id' => 1])->one();
+        $bill = Document::findOne($this->parent_id);
+            
+        $spreadsheet = new Spreadsheet;
+        $sheet = $spreadsheet->getActiveSheet();
+        
+        $sheet->getColumnDimension('A')->setWidth(5);
+        
+        $row = 2;
+        
+        $sheet->setCellValue('A' . $row, $this->name . ' от ' . \Yii::$app->formatter->asDate($this->date));
+        $sheet->getStyle('A' . $row)->applyFromArray(
+            ['font' => ['bold' => true, 'size' => 16], 'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER,]]
+        );
+        $sheet->mergeCells('A' . $row . ':J' . $row);
+        $sheet->getRowDimension($row)->setRowHeight(30);
+        
+        $row += 2;
+        
+        $sheet->setCellValue('A' . $row, 'Исполнитель:');
+        $sheet->setCellValue('C' . $row, $rekv->org . ', ' . $rekv->address . ',  ИНН ' . $rekv->inn . ",\n КПП "  . $rekv->inn . ', р/сч ' . $rekv->rs . ",\n банк " . $rekv->bank . ', корр.счет ' . $rekv->ks . ', БИК ' . $rekv->bik);
+        $sheet->mergeCells('A' . $row . ':B' . $row);
+        $sheet->mergeCells('C' . $row . ':J' . $row);
+        $sheet->getStyle('C' . $row)->getAlignment()->setWrapText(true);
+        $sheet->getRowDimension($row)->setRowHeight(50);
+        $sheet->getStyle('A' . $row)->applyFromArray(['alignment' => ['vertical' => Alignment::VERTICAL_TOP,]]);
+        $sheet->getStyle('C' . $row)->applyFromArray(['alignment' => ['vertical' => Alignment::VERTICAL_TOP,]]);
+        
+        $row++;
+        
+        $sheet->setCellValue('A' . $row, 'Заказчик:');
+        $sheet->setCellValue('C' . $row, $this->client->org . ', ' . $this->client->address . ", ИНН " . $this->client->inn . ",\n КПП "  . $this->client->inn . ', р/сч ' . $this->client->rs . ",\n банк " . $this->client->bank . ', корр.счет ' . $this->client->ks . ', БИК ' . $this->client->bik);
+        $sheet->mergeCells('A' . $row . ':B' . $row);
+        $sheet->mergeCells('C' . $row . ':J' . $row);
+        $sheet->getStyle('C' . $row)->getAlignment()->setWrapText(true);
+        $sheet->getRowDimension($row)->setRowHeight(50);
+        $sheet->getStyle('A' . $row)->applyFromArray(['alignment' => ['vertical' => Alignment::VERTICAL_TOP,]]);
+        $sheet->getStyle('C' . $row)->applyFromArray(['alignment' => ['vertical' => Alignment::VERTICAL_TOP,]]);
+        
+        $row++;
+        
+        $sheet->setCellValue('A' . $row, 'По счёту:');
+        $sheet->setCellValue('C' . $row, 'Счёт №' . $bill->number);
+        $sheet->mergeCells('A' . $row . ':B' . $row);
+        $sheet->mergeCells('C' . $row . ':J' . $row);
+        
+        $row += 2;
+        
+        $th = $tdc = $tdl = [
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER,],
+            'borders' => ['outline' => ['borderStyle' => Border::BORDER_THIN,],],
+        ];
+        $tdl['alignment']['horizontal'] = Alignment::HORIZONTAL_LEFT;
+        $th['font'] = ['bold' => true];
+            
+        $sheet->setCellValue('A' . $row, '№');
+        $sheet->setCellValue('B' . $row, 'Наименование товара, работ, услуг');
+        $sheet->setCellValue('G' . $row, 'Кол-во');
+        $sheet->setCellValue('H' . $row, 'Цена');
+        $sheet->setCellValue('I' . $row, 'Сумма');
+        $sheet->mergeCells('B' . $row . ':F' . $row);
+        $sheet->mergeCells('I' . $row . ':J' . $row);
+        $sheet->getStyle('A' . $row)->applyFromArray($th);
+        $sheet->getStyle('B' . $row . ':F' . $row)->applyFromArray($th);
+        $sheet->getStyle('G' . $row)->applyFromArray($th);
+        $sheet->getStyle('H' . $row)->applyFromArray($th);
+        $sheet->getStyle('I' . $row . ':J' . $row)->applyFromArray($th);
+        $sheet->getRowDimension($row)->setRowHeight(20);
+        
+        $row++;
+        
+        foreach ($this->positions AS $k => $p)
+        {
+            $sheet->setCellValue('A' . $row, $k + 1);
+            $sheet->setCellValue('B' . $row, $p->name);
+            $sheet->setCellValue('G' . $row, $p->quantity);
+            $sheet->setCellValue('H' . $row, $p->price . ' р.');
+            $sheet->setCellValue('I' . $row, ($p->price * $p->quantity) . ' р.');
+            $sheet->mergeCells('B' . $row . ':F' . $row);
+            $sheet->mergeCells('I' . $row . ':J' . $row);
+            $sheet->getStyle('A' . $row)->applyFromArray($tdc);
+            $sheet->getStyle('B' . $row . ':F' . $row)->applyFromArray($tdl);
+            $sheet->getStyle('G' . $row)->applyFromArray($tdc);
+            $sheet->getStyle('H' . $row)->applyFromArray($tdc);
+            $sheet->getStyle('I' . $row . ':J' . $row)->applyFromArray($tdc);
+            $sheet->getRowDimension($row)->setRowHeight(20);
+            $row++;
+        }
+        
+        $styles = [
+            'center' => [
+                'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+            ],
+            'bold_right' => [
+                'alignment' => ['horizontal' => Alignment::HORIZONTAL_RIGHT],
+                'font' => ['bold' => true]
+            ],
+        ];
+        
+        $sheet->setCellValue('A' . $row, 'Итого:');
+        $sheet->setCellValue('I' . $row, $this->sum . ' р.');
+        $sheet->mergeCells('A' . $row . ':H' . $row);
+        $sheet->mergeCells('I' . $row . ':J' . $row);
+        $sheet->getStyle('A' . $row)->applyFromArray($styles['bold_right']);
+        $sheet->getStyle('I' . $row)->applyFromArray($styles['center']);
+        
+        $row++;
+        
+        $sheet->setCellValue('A' . $row, 'В том числе НДС:');
+        $sheet->setCellValue('I' . $row, 'Без НДС');
+        $sheet->mergeCells('A' . $row . ':H' . $row);
+        $sheet->mergeCells('I' . $row . ':J' . $row);
+        $sheet->getStyle('A' . $row)->applyFromArray($styles['bold_right']);
+        $sheet->getStyle('I' . $row)->applyFromArray($styles['center']);
+        
+        $row++;
+        
+        $sheet->setCellValue('A' . $row, 'Всего к оплате:');
+        $sheet->setCellValue('I' . $row, $this->sum . ' р.');
+        $sheet->mergeCells('A' . $row . ':H' . $row);
+        $sheet->mergeCells('I' . $row . ':J' . $row);
+        $sheet->getStyle('A' . $row)->applyFromArray($styles['bold_right']);
+        $sheet->getStyle('I' . $row)->applyFromArray($styles['center']);
+        
+        $row += 2;
+        
+        $sheet->setCellValue('A' . $row, 'Всего оказано услуг на сумму:');
+        $sheet->mergeCells('A' . $row . ':D' . $row);
+        $sheet->setCellValue('E' . $row, num_propis($this->sum) . ' руб.');
+        $sheet->mergeCells('E' . $row . ':J' . $row);
+        $sheet->getStyle('E' . $row)->applyFromArray(['font' => ['bold' => true]]);
+        
+        $row++;
+        $sheet->setCellValue('A' . $row, "Вышеперечисленные услуги выполнены полностью и в срок.\nЗаказчик претензий по объему, качеству и срокам оказания услуг не имеет.");	$sheet->getStyle('A' . $row)->getAlignment()->setWrapText(true);
+        $sheet->getRowDimension($row)->setRowHeight(32);
+        
+        $sheet->mergeCells('A' . $row . ':J' . $row);
+
+        $row += 2;
+        
+        $sheet->setCellValue('A' . $row, 'Исполнитель');
+        $sheet->mergeCells('A' . $row . ':F' . $row);
+        $sheet->setCellValue('G' . $row, 'Заказчик');
+        $sheet->mergeCells('G' . $row . ':J' . $row);
+        $sheet->getRowDimension($row)->setRowHeight(35);
+        $sheet->getStyle('A' . $row . ':J' . $row)->applyFromArray(
+            ['font' => ['bold' => true, 'size' => 14], 'alignment' => ['vertical' => Alignment::VERTICAL_CENTER,]]
+        );
+        
+        $row++;
+        
+        $sheet->setCellValue('A' . $row, 'директор');
+        $sheet->mergeCells('A' . $row . ':J' . $row);
+        
+        $row += 4;
+        
+        $sheet->setCellValue('D' . $row, '/' . $rekv->dir . '/');
+        $sheet->mergeCells('D' . $row . ':E' . $row);
+        $sheet->getStyle('D' . $row)->applyFromArray($styles['center']);
+        
+        $row++;
+        
+        $sheet->setCellValue('B' . $row, 'подпись');
+        $sheet->setCellValue('D' . $row, 'расшифровка подписи');
+        $sheet->mergeCells('B' . $row . ':C' . $row);
+        $sheet->mergeCells('D' . $row . ':E' . $row);
+        $sheet->getStyle('B' . $row . ':E' . $row)->applyFromArray(array_merge($styles['center'], ['font' => ['size' => 7], 'borders' => ['top' => ['borderStyle' => Border::BORDER_THIN]]]));
+        $sheet->setCellValue('G' . $row, 'подпись');
+        $sheet->setCellValue('I' . $row, 'расшифровка подписи');
+        $sheet->mergeCells('G' . $row . ':H' . $row);
+        $sheet->mergeCells('I' . $row . ':J' . $row);
+        $sheet->getStyle('G' . $row . ':J' . $row)->applyFromArray(array_merge($styles['center'], ['font' => ['size' => 7], 'borders' => ['top' => ['borderStyle' => Border::BORDER_THIN]]]));
+        
+        
+        $sheet->getRowDimension($row)->setRowHeight(10);
+        
+        
+        $f = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $this->name  . '.xlsx';
+                        
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($f);
+        
+        file_force_download($f);
+        unlink($f);
     }
     
     protected function getNakl()
     {
+        \Yii::$app->formatter->locale = 'ru-RU';
         
+        $rekv = OrderClient::find()->where(['id' => 1])->asArray()->one();
+        
+        $spreadsheet = new Spreadsheet;
+        $sheet = $spreadsheet->getActiveSheet();
+        
+        
+        
+        
+        $f = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $this->name  . '.xlsx';
+                        
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($f);
+
+        //printr($f);
+        
+        file_force_download($f);
+        unlink($f);
     }
     
     public function pay($sum)
