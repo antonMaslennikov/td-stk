@@ -7,7 +7,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
-use backend\models\ProductSearch;
+use backend\models\StockItemSearch;
 
 /**
  * StockController implements the CRUD actions for StockItem model.
@@ -35,8 +35,7 @@ class StockController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new ProductSearch();
-        $searchModel->onstock = true;
+        $searchModel = new StockItemSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         
         return $this->render('index', [

@@ -7,6 +7,7 @@
     use backend\models\Order;
 
     $paymentForm = new \backend\models\OrderPaymentForm;
+    $payForm = new \backend\models\OrderPayForm;
 ?>
 
 <?php $form = ActiveForm::begin(['action' => Url::to(['order/savepayment']), 'id' => 'paymentForm']); ?>
@@ -96,11 +97,11 @@
 
     <?php $form = ActiveForm::begin(['action' => Url::to(['order/setpayment'])]); ?>
 
-        <?= $form->field($paymentForm, 'sum')->textInput(['value' => $model->sum + $model->delivery_cost - $model->alreadyPayed, 'placeholder' => 'укажите сумму', 'class' => 'form-control']) ?>
+        <?= $form->field($payForm, 'sum')->textInput(['value' => $model->sum + $model->delivery_cost - $model->alreadyPayed, 'placeholder' => 'укажите сумму', 'class' => 'form-control']) ?>
 
-        <?= $form->field($paymentForm, 'order_id')->hiddenInput(['value' => $model->id])->label(false) ?>
+        <?= $form->field($payForm, 'order_id')->hiddenInput(['value' => $model->id])->label(false) ?>
 
-        <?= $form->field($paymentForm, 'payment_type')->hiddenInput(['value' => $model->payment_type])->label(false) ?>
+        <?= $form->field($payForm, 'payment_type')->hiddenInput(['value' => $model->payment_type])->label(false) ?>
 
         <div class="form-group">
             <?= Html::submitButton('Оплатить', ['class' => 'btn btn-info']) ?>

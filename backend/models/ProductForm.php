@@ -41,6 +41,12 @@ class ProductForm extends Model
     public $price;
     public $price_final;
     public $discount;
+    
+    public $weight;
+    public $width;
+    public $height;
+    public $length;
+    public $quantityInbox;
 	
     /**
      * @inheritdoc
@@ -65,6 +71,8 @@ class ProductForm extends Model
             ['pictures', 'file', 'extensions' => 'png, jpg, gif', 'skipOnEmpty' => true, 'maxFiles' => 7, 'checkExtensionByMimeType'=>false],
             
 			[['id', 'category_id', 'discount'], 'safe'],
+            
+            [['weight', 'width', 'height', 'length', 'quantityInbox'], 'number'],
         ];
     }
 
@@ -89,6 +97,11 @@ class ProductForm extends Model
             'selfprice' => 'Себестоимость',
             'price' => 'Цена без скидки',
             'price_final' => 'Итоговая цена',
+            'weight' => 'Вес брутто единицы товара, кг', 
+            'width' => 'Ширина единицы товара, см', 
+            'height' => 'Высота единицы товара, см', 
+            'length' => 'Длина единицы товара, см', 
+            'quantityInbox' => 'Штук в коробке',
         ];
     }
 	
@@ -123,6 +136,12 @@ class ProductForm extends Model
         $p->selfprice = $this->selfprice;
         $p->price = $this->price;
         $p->discount = $this->price > 0 ? 100 - ($this->price_final * 100 / $this->price) : 0;
+        
+        $p->weight = $this->status;
+        $p->width = $this->width;
+        $p->height = $this->height;
+        $p->length = $this->length;
+        $p->quantityInbox = $this->quantityInbox;
         
 		$p->save();
 		

@@ -8,7 +8,7 @@ use backend\models\OrderSearch;
 use backend\models\OrderForm;
 
 use common\models\OrderClient;
-use common\models\OrderItem;
+use backend\models\OrderItem;
 
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -214,5 +214,31 @@ class OrderController extends Controller
             if ($item = $model->saveData())
                 return $this->redirect(['view', 'id' => $model->order_id]);
         }
+    }
+    
+    public function actionPut2reserv($item_id)
+    {
+        if ($model = OrderItem::findOne($item_id)) {
+            if ($model->put2reserv()) {
+                Yii::$app->session->setFlash('success', 'Позиция #' . $model->id . ' отправлена в резерв');
+            }
+        } else {
+            Yii::$app->session->setFlash('error', 'Позиция с таким номером не обнаружена!');
+        }
+        
+        return $this->redirect(['view', 'id' => $model->order_id]);
+    }
+    
+    public function actionPut2production($item_id)
+    {
+        if ($model = OrderItem::findOne($item_id)) {
+            if ($model->put2production()) {
+                Yii::$app->session->setFlash('success', 'Позиция #' . $model->id . ' отправлена в производство');
+            }
+        } else {
+            Yii::$app->session->setFlash('error', 'Позиция с таким номером не обнаружена!');
+        }
+        
+        return $this->redirect(['view', 'id' => $model->order_id]);
     }
 }

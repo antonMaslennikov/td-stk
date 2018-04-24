@@ -26,6 +26,23 @@
         <tr>
            <th colspan="2">Доставка</th>
         </tr>
+        <tr style="background-color:#d5ecf1">
+            <td>Дата доставки</td>
+            <td>
+                <span><?= $model->delivery_date == '0000-00-00' ? 'Не задана' : $model->delivery_date ?></span>
+                <div class="hh hidden">
+                    <?= $form->field($deliveryForm, 'delivery_date')->widget(DatePicker::classname(), [
+                            'removeButton' => false,
+                            'options' => ['placeholder' => 'Дата доставки', 'value' => $model->delivery_date == '0000-00-00' ? '' : $model->delivery_date],
+                            'pluginOptions' => [
+                                'format' => 'yyyy-mm-dd',
+                                'todayHighlight' => true,
+                            ]
+                        ])->label(false);
+                    ?>
+                </div>
+            </td>
+        </tr>
         <tr>
             <td>Тип доставки</td>
             <td>
@@ -68,23 +85,6 @@
                 <span><?= $model->delivery_cost ?> руб.</span>
                 <div class="hh hidden">
                     <?= $form->field($deliveryForm, 'delivery_cost')->textInput()->label(false) ?>
-                </div>
-            </td>
-        </tr>
-        <tr style="background-color:#d5ecf1">
-            <td>Дата доставки</td>
-            <td>
-                <span><?= $model->delivery_date == '0000-00-00' ? 'Не задана' : $model->delivery_date ?></span>
-                <div class="hh hidden">
-                    <?= $form->field($deliveryForm, 'delivery_date')->widget(DatePicker::classname(), [
-                            'removeButton' => false,
-                            'options' => ['placeholder' => 'Дата доставки', 'value' => $model->delivery_date == '0000-00-00' ? '' : $model->delivery_date],
-                            'pluginOptions' => [
-                                'format' => 'yyyy-mm-dd',
-                                'todayHighlight' => true,
-                            ]
-                        ])->label(false);
-                    ?>
                 </div>
             </td>
         </tr>

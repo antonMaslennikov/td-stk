@@ -19,6 +19,7 @@ use backend\models\Size;
  * @property int $picture
  * @property string $barcode
  * @property int $status
+ * @property int $weight
  * @property string $created_at
  * @property string $updated_at
  */
@@ -49,6 +50,7 @@ class Product extends \yii\db\ActiveRecord
             [['status'], 'integer', 'max' => 1],
 			[['category', 'art', 'picture', 'barcode', 'created_at', 'updated_at'], 'safe'],
             [['selfprice', 'price', 'discount'], 'number'],
+            [['weight', 'width', 'height', 'length', 'quantityInbox'], 'number'],
         ];
     }
 
@@ -71,7 +73,12 @@ class Product extends \yii\db\ActiveRecord
             'status' => 'Статус',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
-            'quantity' => 'Количество на складе'
+            'quantity' => 'Количество на складе',
+            'weight' => 'Вес брутто единицы товара, кг', 
+            'width' => 'Ширина единицы товара, см', 
+            'height' => 'Высота единицы товара, см', 
+            'length' => 'Длина единицы товара, см', 
+            'quantityInbox' => 'Штук в коробке',
         ];
     }
 	

@@ -24,6 +24,7 @@ use backend\components\ColorPickerWidget;
 
         <ul class="nav nav-tabs">
             <li class="active"><a href="#main" data-toggle="tab">Основные данные</a></li>
+            <li><a href="#options" data-toggle="tab">Характеристики</a></li>
             <li><a href="#image" data-toggle="tab">Изображения</a></li>
             <li><a href="#stock" data-toggle="tab">Цены</a></li>
         </ul>
@@ -83,6 +84,20 @@ use backend\components\ColorPickerWidget;
                 <?= $form->field($model, 'price')->textInput() ?>
                 
                 <?= $form->field($model, 'price_final')->textInput(['value' => $model->price - ($model->price / 100 * $model->discount) ]) ?>
+                
+            </div>
+            
+            <div class="tab-pane" id="options">
+                
+                <?= $form->field($model, 'weight')->textInput() ?>
+                
+                <?= $form->field($model, 'width')->textInput() ?>
+                
+                <?= $form->field($model, 'height')->textInput() ?>
+                
+                <?= $form->field($model, 'length')->textInput() ?>
+                                
+                <?= $form->field($model, 'quantityInbox')->textInput() ?>
                 
             </div>
         </div>

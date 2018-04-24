@@ -9,6 +9,7 @@ use backend\models\Document;
 use backend\components\AddItemWidget;
 use backend\components\CreateDocumentWidget;
 
+
 /* @var $this yii\web\View */
 /* @var $model backend\models\Order */
 
@@ -45,11 +46,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                
                                 <?= $this->render('_parts/client', ['model' => $model]) ?>
 
+                                <?= $this->render('_parts/delivery', ['model' => $model]) ?>
+                               
                                 <?= $this->render('_parts/payment', ['model' => $model]) ?>
-                                      
-                                <?= $this->render('_parts/delivery', ['model' => $model]) ?>      
-                                     
-                            
+                                
                                 <form action="" method="post">
 
                                     <?php if ($model->status != Order::STATUS_DELIVERED && $model->status != Order::STATUS_CANCELED): ?>

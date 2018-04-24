@@ -6,7 +6,7 @@
 	use yii\helpers\Html;
 	use yii\widgets\InputWidget;
 
-	use common\models\color;
+	use common\models\Color;
 	
 	class ColorPickerWidget extends InputWidget
 	{	

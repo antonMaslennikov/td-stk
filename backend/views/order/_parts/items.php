@@ -6,7 +6,8 @@
 
     use common\models\Order;
     use backend\components\AddItemWidget;
-
+    use backend\models\Stock;
+    use backend\models\ProductionItems;
 ?>
 
 <?= Html::beginForm(['order/updateitems'], 'post') ?>
@@ -24,7 +25,7 @@
     <?php if ($model->status != Order::STATUS_DELIVERED && $model->status != Order::STATUS_CANCELED): ?>
     <tr>
         <td colspan="8">
-            <?= Html::a('<button class="btn btn-xs btn-success"><i class="fa fa-fw fa-plus"></i> Добавить позицию</button>', '#addItemModal', ['data-toggle' => 'modal']) ?>    
+            <?= Html::a('<button class="btn btn-xs btn-success pull-right"><i class="fa fa-fw fa-plus"></i> Добавить позицию</button>', '#addItemModal', ['data-toggle' => 'modal']) ?>    
         </td>
     </tr>
     <?php endif; ?>
@@ -67,6 +68,51 @@
             <a href="<?= Url::to(['order/view', 'id' => $model->id, 'edit' => $g->id]) ?>" class="btn btn-warning btn-xs" title="Изменить данные"><i class="fa fa-fw fa-pencil"></i></a>
             <a href="<?= Url::to(['order/deletepos', 'id' => $g->id]) ?>" class="btn btn-danger btn-xs delete-pos" title="Удалить товар"><i class="fa fa-fw fa-times"></i></a>
             <?php endif; ?>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="8">
+            
+            <?php 
+                // общее количество готовых не зарезервированных товаров на складе
+                $readyQ = Stock::getReadyProductQuantity($g->product_id, 0); 
+            
+                // количество зарезервированных на складе позиций
+                $readyReserved = Stock::getReadyProductQuantity($g->product_id, $g->id); 
+            
+                // количество в произвостве
+                $inproduction = ProductionItems::getQuantityInProduction($g->id);
+            ?>
+            
+            <div class="row">
+                <?php if ($readyQ > 0) { ?>
+                <div class="col-sm-3">
+                    Есть на складе: <?= $readyQ ?> шт.
+                </div>
+                <?php } ?>
+                <?php if ($readyReserved > 0) { ?>
+                <div class="col-sm-3">
+                    Зарезервировано: <?= $readyReserved ?> шт.
+                </div>
+                <?php } ?>
+                <?php if ($readyQ > 0 && $readyReserved < $g->quantity) { ?>
+                <div class="col-sm-1">
+                    <?= Html::a('В резерв', Url::to(['order/put2reserv', 'item_id' => $g->id]), ['class' => 'btn btn-xs btn-default']); ?>
+                </div>
+                <?php } ?>
+                <?php if ($readyQ > 0 && $readyReserved < $g->quantity) { ?>
+                <?php } else { ?>
+                <div class="col-sm-6">
+                    <?php if ($inproduction > 0) { ?>
+                        В производстве: <?= $inproduction ?> шт.
+                    <?php } ?>
+                    <?php if ($inproduction < $g->quantity - $readyReserved) { ?>
+                        <?= Html::a('В производство: ' . ($g->quantity - $readyReserved - $inproduction) . ' шт.', Url::to(['order/put2production', 'item_id' => $g->id]), ['class' => 'btn btn-xs btn-default']); ?>
+                    <?php } ?>
+                </div>
+                <?php } ?>
+            </div>
+            
         </td>
     </tr>
     <?php endforeach; ?>
