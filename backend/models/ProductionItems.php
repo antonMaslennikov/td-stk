@@ -14,6 +14,7 @@ use Yii;
 class ProductionItems extends \yii\db\ActiveRecord
 {
     const STATUS_ACCEPTED = 1;
+    const STATUS_PRINTING = 2;
     const STATUS_READY = 3;
     
     
@@ -32,7 +33,8 @@ class ProductionItems extends \yii\db\ActiveRecord
     {
         return [
             [['order_id', 'item_id', 'status', 'quantity'], 'required'],
-            [['order_id', 'quantity'], 'integer'],
+            [['order_id', 'quantity', 'product_id'], 'integer'],
+            [['printed_at', 'sewing_at', 'reserved_at'], 'safe'],
         ];
     }
 
@@ -66,5 +68,43 @@ class ProductionItems extends \yii\db\ActiveRecord
         $c = $q->one(); 
 
         return (int) $c['c'];
+    }
+
+    /**
+     * Переместить позицию на производстве на этап печати
+     */
+    public function move2printing()
+    {
+        $this->sewing_at = date('Y-m-d H:i:s', time());
+        $this->status = self::STATUS_PRINTING;
+        
+        return $this->save() ? $this : false;
+    }
+    
+    /**
+     * Отправить позицию на производстве в резерв на склад
+     */
+    public function move2reserv()
+    {
+        if ($this->status == self::STATUS_READY) {
+            return false;
+        }
+        
+        $this->reserved_at = date('Y-m-d H:i:s', time());
+        $this->status = self::STATUS_READY;
+        $this->save();
+        
+        // заводим необходимое количество поизций на складе
+        // и резервируем их за позицией в заказе
+        for ($i = 0; $i < $this->quantity; $i++) 
+        {
+            $si = new StockItem;
+            $si->status = 1;
+            $si->order_item_id = $this->item_id;
+            $si->product_id = $this->product_id;
+            $si->save();
+        }
+        
+        return true;
     }
 }

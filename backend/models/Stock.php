@@ -22,7 +22,7 @@
             $q = (new \yii\db\Query())
                 ->select('count(*) AS c')
                 ->from(StockItem::tableName())
-                ->where(['and', 'product_id = :id', 'status = 0'], [':id' => $product_id]);
+                ->where(['and', 'product_id = :id'], [':id' => $product_id]);
             
             if (!is_null($item_id)) {
                 $q->andFilterWhere(['and', 'order_item_id = ' . $item_id]);

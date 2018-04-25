@@ -24,7 +24,7 @@ class StockItemSearch extends StockItem
     public function rules()
     {
         return [
-            [['id', 'product_id'], 'integer'],
+            [['id', 'product_id', 'order_item_id'], 'integer'],
             [['come_at'], 'safe'],
         ];
     }
@@ -49,6 +49,7 @@ class StockItemSearch extends StockItem
     {
         $query = StockItem::find()
                     ->with('product');
+                    //->join('left', 'color', 'color.id = product.color_id');
 
         // add conditions that should always apply here
 
@@ -68,6 +69,7 @@ class StockItemSearch extends StockItem
         $query->andFilterWhere([
             'id' => $this->id,
             'product_id' => $this->product_id,
+            'order_item_id' => $this->order_item_id,
         ]);
 
 

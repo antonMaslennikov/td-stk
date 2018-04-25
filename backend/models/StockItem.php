@@ -39,7 +39,7 @@ class StockItem extends \yii\db\ActiveRecord
             [['product_id'], 'required'],
             [['product_id', 'order_item_id'], 'integer'],
             [['come_at'], 'safe'],
-            [['status'], 'string', 'max' => 4],
+            ['status', 'in', 'range' => array_keys(self::$statuses)],
         ];
     }
 
@@ -59,5 +59,9 @@ class StockItem extends \yii\db\ActiveRecord
     
     public function getProduct(){
         return $this->hasOne(Product::className(), ['id' => 'product_id']);
+    }
+    
+    public function getOrderItem(){
+        return $this->hasOne(OrderItem::className(), ['id' => 'order_item_id']);
     }
 }

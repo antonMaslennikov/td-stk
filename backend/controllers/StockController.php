@@ -36,6 +36,7 @@ class StockController extends Controller
     public function actionIndex()
     {
         $searchModel = new StockItemSearch();
+        $searchModel->order_item_id = 0;
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         
         return $this->render('index', [

@@ -80,12 +80,12 @@
                 // количество зарезервированных на складе позиций
                 $readyReserved = Stock::getReadyProductQuantity($g->product_id, $g->id); 
             
-                // количество в произвостве
+                // количество в производстве
                 $inproduction = ProductionItems::getQuantityInProduction($g->id);
             ?>
             
             <div class="row">
-                <?php if ($readyQ > 0) { ?>
+                <?php if ($readyQ > 0 && $readyReserved < $g->quantity && $inproduction < $g->quantity) { ?>
                 <div class="col-sm-3">
                     Есть на складе: <?= $readyQ ?> шт.
                 </div>
@@ -95,19 +95,18 @@
                     Зарезервировано: <?= $readyReserved ?> шт.
                 </div>
                 <?php } ?>
-                <?php if ($readyQ > 0 && $readyReserved < $g->quantity) { ?>
+                <?php if ($readyQ > 0 && ($readyReserved < $g->quantity) && ($inproduction < $g->quantity - $readyReserved)) { ?>
                 <div class="col-sm-1">
-                    <?= Html::a('В резерв', Url::to(['order/put2reserv', 'item_id' => $g->id]), ['class' => 'btn btn-xs btn-default']); ?>
+                    <?= Html::a('В резерв', Url::to(['order/put2reserv', 'item_id' => $g->id]), ['class' => 'btn btn-xs btn-info']); ?>
                 </div>
                 <?php } ?>
-                <?php if ($readyQ > 0 && $readyReserved < $g->quantity) { ?>
-                <?php } else { ?>
+                <?php if ($readyReserved < $g->quantity) { ?>
                 <div class="col-sm-6">
                     <?php if ($inproduction > 0) { ?>
                         В производстве: <?= $inproduction ?> шт.
                     <?php } ?>
                     <?php if ($inproduction < $g->quantity - $readyReserved) { ?>
-                        <?= Html::a('В производство: ' . ($g->quantity - $readyReserved - $inproduction) . ' шт.', Url::to(['order/put2production', 'item_id' => $g->id]), ['class' => 'btn btn-xs btn-default']); ?>
+                        <?= Html::a('В производство: ' . ($g->quantity - $readyReserved - $inproduction) . ' шт.', Url::to(['order/put2production', 'item_id' => $g->id]), ['class' => 'btn btn-xs btn-primary']); ?>
                     <?php } ?>
                 </div>
                 <?php } ?>

@@ -20,33 +20,36 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
             [
-                'attribute' => 'name_ru',
+                'attribute' => 'product.name_ru',
                 'format' => 'raw',
                 'content' => function($data) {
-                    return Html::a($data->name_ru, ['product/update', 'id' => $data->id], ['target' => '_blank']);
+                    return Html::a($data->product->name_ru, ['product/update', 'id' => $data->id], ['target' => '_blank']);
                 }
             ],
+            'order_item_id',
+            /*
             [
-                'attribute' => 'color_id',
+                'attribute' => 'color.id',
                 'format' => 'raw',
                 'content' => function($data) {
                     return $data->color->name;
                 }
             ],
             [
-                'attribute' => 'size_id',
+                'attribute' => 'size.id',
                 'format' => 'raw',
                 'content' => function($data) {
                     return $data->size->name;
                 }
-            ],
-            'quantity',
+            ]
+            'quantity'
             [
 				'class' => 'yii\grid\ActionColumn',
 				'header'=>'Действия', 
 				'headerOptions' => ['width' => '80'],
 				'template' => '{view}',
 			],
+            */
         ],
     ]); ?>
 </div>

@@ -1,6 +1,7 @@
 <?php
 	use common\components\RolesHelper;
     use yii\helpers\Url;
+    use backend\models\Document;
 ?>
 
 <aside class="main-sidebar">
@@ -53,15 +54,15 @@
 					],
                     ['label' => 'Производство', 'icon' => 'magic', 'url' => '#',
                         'items' => [
-                            ['label' => 'Пошив', 'icon' => 'scissors', 'url' => Url::to(['production/sewing'])],
-                            ['label' => 'Печать', 'icon' => 'print', 'url' => Url::to(['production/printing'])],
+                            ['label' => 'Пошив', 'icon' => 'scissors', 'url' => ['production/sewing']],
+                            ['label' => 'Печать', 'icon' => 'print', 'url' => ['production/printing']],
                         ]
                     ],
                     ['label' => 'Документы', 'icon' => 'clone', 'url' => '#',
                         'items' => [
-                            ['label' => 'Счета', 'icon' => 'list', 'url' => Url::to(['document/index', 'DocumentSearch[type]' => 1, 'DocumentSearch[direction]' => 1])],
-                            ['label' => 'Акты', 'icon' => 'list', 'url' => Url::to(['document/index', 'DocumentSearch[type]' => 2, 'DocumentSearch[direction]' => 1])],
-                            ['label' => 'Накладные', 'icon' => 'list', 'url' => Url::to(['document/index', 'DocumentSearch[type]' => 3, 'DocumentSearch[direction]' => 1])],
+                            ['label' => 'Счета', 'icon' => 'list', 'url' => ['document/index', 'DocumentSearch[type]' => Document::TYPE_BILL, 'DocumentSearch[direction]' => 1]],
+                            ['label' => 'Акты', 'icon' => 'list', 'url' => ['document/index', 'DocumentSearch[type]' => Document::TYPE_AKT, 'DocumentSearch[direction]' => 1]],
+                            ['label' => 'Накладные', 'icon' => 'list', 'url' => ['document/index', 'DocumentSearch[type]' => Document::TYPE_NAKL, 'DocumentSearch[direction]' => 1]],
                         ]
                     ],
 					[

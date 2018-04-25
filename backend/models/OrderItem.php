@@ -20,11 +20,20 @@ class OrderItem extends \common\models\OrderItem
                         ->where(['order_item_id' => $this->id, 'product_id' => $this->product_id])
                         ->one();
         
-        $limit = $this->quantity - $reserved['c'];
+        // вычисляем количество позиций которые уже находяться в производстве но ещё не пошиты
+        $inproduction = ProductionItems::getQuantityInProduction($this->id, ProductionItems::STATUS_ACCEPTED);
         
-        Yii::$app->db->createCommand('update {{' . StockItem::tableName() . '}} set order_item_id = ' . $this->id . ' where product_id = ' . $this->product_id . ' and order_item_id = 0 LIMIT ' . $limit)->execute();
-                //->update(StockItem::tableName(), ['order_item_id' => $this->id], ['product_id' => $this->product_id, 'order_item_id' => 0])
-                //->execute();
+        $limit = $this->quantity - $reserved['c'] - $inproduction;
+        
+        Yii::$app->db->createCommand('update {{' . StockItem::tableName() . '}} 
+                                      set order_item_id = ' . $this->id . ' 
+                                      where product_id = ' . $this->product_id . ' and order_item_id = 0 
+                                      limit ' . $limit)->execute();
+        
+        //->update(StockItem::tableName(), ['order_item_id' => $this->id], ['product_id' => $this->product_id, 'order_item_id' => 0])
+        //->execute();
+        
+        return true;
     }
     
     /**
@@ -39,10 +48,10 @@ class OrderItem extends \common\models\OrderItem
         $readyReserved = Stock::getReadyProductQuantity($this->product_id, $this->id);
         
         // если есть готовые позиции на складе запрещаем ставить в производство до тех пор пока их не поставять в резерв
-        if ($ready > 0 && $readyReserved == 0) {
-            Yii::$app->session->setFlash('warning', 'На складе есть готовые позиции. Установите их в резерв');
-            return null;
-        }
+        //if ($ready > 0 && $readyReserved == 0) {
+        //    Yii::$app->session->setFlash('warning', 'На складе есть готовые позиции. Установите их в резерв');
+        //    return null;
+        //}
         
         // если нет то создаём заказ на производство
         if (!$pr_order = ProductionOrder::find()->where(['order_id' => $this->order_id])->one()) {
@@ -62,6 +71,7 @@ class OrderItem extends \common\models\OrderItem
             $pr_item = new ProductionItems;
             $pr_item->order_id = $pr_order->id;
             $pr_item->item_id = $this->id;
+            $pr_item->product_id = $this->product_id;
             $pr_item->quantity = $this->quantity - $readyReserved - $inproduction;
             $pr_item->status = ProductionItems::STATUS_ACCEPTED;
             $pr_item->save();
