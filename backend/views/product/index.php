@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
@@ -15,6 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'layout'=>"{items}\n{pager}",
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
@@ -24,6 +26,11 @@ $this->params['breadcrumbs'][] = $this->title;
               'attribute' => 'category_id',
               'label' => 'Категория',
               'value' => 'category.name',
+            ],
+            [
+              'attribute' => 'color_id',
+              'label' => 'Цвет',
+              'value' => 'color.name',
             ],
             [
               'attribute' => 'material_id',

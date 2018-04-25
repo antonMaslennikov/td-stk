@@ -218,4 +218,24 @@ class ProductController extends Controller
         
         return json_encode($results);
     }
+    
+    public function actionTostock($id, $q)
+    {
+        if (empty($q)) {
+            $q = 1;
+        }
+        
+        if ($id && $q)
+        {
+            for ($i = 0; $i < $q; $i++) {
+                $si = new \backend\models\StockItem;
+                $si->product_id = $id;
+                $si->save();
+            }
+            
+            Yii::$app->session->setFlash('success', 'На склад внесено ' .$q . ' позиций');
+        }
+        
+        return $this->redirect(Yii::$app->request->referrer);
+    }
 }

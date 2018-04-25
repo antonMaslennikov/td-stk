@@ -3,6 +3,7 @@
 namespace backend\models;
 
 use Yii;
+use common\models\Product;
 
 /**
  * This is the model class for table "production__items".
@@ -33,7 +34,7 @@ class ProductionItems extends \yii\db\ActiveRecord
     {
         return [
             [['order_id', 'item_id', 'status', 'quantity'], 'required'],
-            [['order_id', 'quantity', 'product_id'], 'integer'],
+            [['order_id', 'quantity', 'product_id', 'quantity_from_stock'], 'integer'],
             [['printed_at', 'sewing_at', 'reserved_at'], 'safe'],
         ];
     }
@@ -49,6 +50,11 @@ class ProductionItems extends \yii\db\ActiveRecord
             'quantity' => 'Quantity',
         ];
     }
+    
+    public function getProduct(){
+        return $this->hasOne(Product::className(), ['id' => 'product_id']);
+    }
+    
     
     /**
      * Получить количество позиций уже в производстве
@@ -106,5 +112,30 @@ class ProductionItems extends \yii\db\ActiveRecord
         }
         
         return true;
+    }
+    
+    public function takefromclear()
+    {
+        if ($this->product_id == 0) {
+            Yii::$app->session->setFlash('warning', 'Это чистая позиция. она не не нуждается в замене');
+        }
+        
+        $clearFromStock = Yii::$app->db
+            ->createCommand("update product__stock s, product p 
+              set 
+                s.order_item_id = :item_id
+              where 
+                    p.id = s.product_id
+                and s.order_item_id = 0
+                and p.category_id = :cat
+                and p.color_id = :color
+                and p.size_id = :size
+                and p.design_id = 0", [':cat' => $this->product->category_id, ':color' => $this->product->color_id, 'size' => $this->product->size_id, 'item_id' => $this->item_id])
+            ->execute();
+        
+        $this->quantity_from_stock = $clearFromStock;
+        $this->save();
+        
+        Yii::$app->session->setFlash('success', 'Чистые позиции взяты со склада ' . $clearFromStock . ' шт.');
     }
 }
