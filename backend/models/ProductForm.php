@@ -34,6 +34,7 @@ class ProductForm extends Model
 	public $color_id;
     public $material_id;
     public $size_id;
+    public $design_id;
 	public $pictures;
 	public $barcode;
 	public $status;
@@ -47,6 +48,17 @@ class ProductForm extends Model
     public $height;
     public $length;
     public $quantityInbox;
+    
+    public $sew_base;
+    public $sew_rubber;
+    public $sew_thread;
+    public $sew_label;
+    
+    public $print_type;
+    public $print_colors;
+    public $print_expense;
+    public $print_more_material;
+    public $print_panton_numbers;
 	
     /**
      * @inheritdoc
@@ -56,6 +68,7 @@ class ProductForm extends Model
         return [
             [['name_ru', 'name_en', 'art', 'color_id', 'material_id', 'size_id', 'barcode'], 'required'],
             [['name_ru', 'name_en', 'slug'], 'string', 'max' => 100],
+            ['design_id', 'integer'],
             [['art'], 'string', 'max' => 20],
             [['barcode'], 'string', 'max' => 30],
             [['status'], 'string', 'max' => 1],
@@ -72,7 +85,11 @@ class ProductForm extends Model
             
 			[['id', 'category_id', 'discount'], 'safe'],
             
-            [['weight', 'width', 'height', 'length', 'quantityInbox'], 'number'],
+            [['weight', 'width', 'height', 'length', 'quantityInbox', 'selfprice', 'price', 'discount', 'weight', 'width', 'height', 'length', 'sew_base', 'sew_rubber', 'sew_thread', 'print_expense'], 'number'],
+            
+            [['sew_label'], 'integer'],
+            [['print_type', 'print_colors'], 'string', 'max' => 4],
+            [['print_more_material', 'print_panton_numbers'], 'string', 'max' => 70]
         ];
     }
 
@@ -102,6 +119,16 @@ class ProductForm extends Model
             'height' => 'Высота единицы товара, см', 
             'length' => 'Длина единицы товара, см', 
             'quantityInbox' => 'Штук в коробке',
+            'design_id' => 'Принт',
+            'sew_base' => 'Основа',
+            'sew_rubber' => 'Резинка',
+            'sew_thread' => 'Нитки',
+            'sew_label' => 'Бирки',
+            'print_type' => 'Тип печати',
+            'print_colors' => 'Кол-во цветов',
+            'print_expense' => 'Расход краски',
+            'print_more_material' => 'Еще материал',
+            'print_panton_numbers' => 'Номера пантонов',
         ];
     }
 	
@@ -129,6 +156,7 @@ class ProductForm extends Model
         $p->material_id = $this->material_id;
         $p->color_id = $this->color_id;
         $p->size_id = $this->size_id;
+        $p->design_id = $this->design_id;
         $p->barcode = $this->barcode;
         $p->status = $this->status;
 		$p->picture = 0;
@@ -142,6 +170,16 @@ class ProductForm extends Model
         $p->height = $this->height;
         $p->length = $this->length;
         $p->quantityInbox = $this->quantityInbox;
+        
+        $p->sew_base = $this->sew_base;
+        $p->sew_rubber = $this->sew_rubber;
+        $p->sew_thread = $this->sew_thread;
+        $p->sew_label = $this->sew_label;
+        $p->print_type = $this->print_type;
+        $p->print_colors = $this->print_colors;
+        $p->print_expense = $this->print_expense;
+        $p->print_more_material = $this->print_more_material;
+        $p->print_panton_numbers = $this->print_panton_numbers;
         
 		$p->save();
 		

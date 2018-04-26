@@ -25,14 +25,15 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="nav-tabs-custom ">
 
                 <ul class="nav nav-tabs">
-                    <li class="active"><a href="#main" data-toggle="tab">Основные данные</a></li>
+                    <li <?php if (!Yii::$app->request->get('tab')) { ?>class="active"<?php } ?>><a href="#main" data-toggle="tab">Основные данные</a></li>
                     <li><a href="#log" data-toggle="tab">История заказа</a></li>
                     <li><a href="#comments" data-toggle="tab">Комментарии к заказу</a></li>
+                    <li <?php if (Yii::$app->request->get('tab') == 'docs') { ?>class="active"<?php } ?>><?= Html::a('Документы по клиенту', Url::to(['view', 'id' => $model->id, 'tab' => 'docs'])) ?></li>
                 </ul>
 
                 <div class="tab-content">
 
-                    <div class="tab-pane active" id="main">
+                    <div class="tab-pane <?php if (!Yii::$app->request->get('tab')) { ?>active<?php } ?>" id="main">
 
                         <div class="row">
                             <div class="col-sm-12"><h2>Статус заказ: <a href="#"><?= $model->status_name ?></a></h2></div>
@@ -96,6 +97,12 @@ $this->params['breadcrumbs'][] = $this->title;
                        
                         <?= $this->render('_parts/comments', ['model' => $model]) ?>
                        
+                    </div>
+                    
+                    <div class="tab-pane <?php if (Yii::$app->request->get('tab') == 'docs') { ?>active<?php } ?>" id="docs">
+                        
+                        <?= $this->render('_parts/docs', ['model' => $model]) ?>
+                        
                     </div>
 
                 </div>

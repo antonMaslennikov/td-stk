@@ -27,6 +27,7 @@ use backend\components\ColorPickerWidget;
             <li><a href="#options" data-toggle="tab">Характеристики</a></li>
             <li><a href="#image" data-toggle="tab">Изображения</a></li>
             <li><a href="#stock" data-toggle="tab">Цены</a></li>
+            <li><a href="#production" data-toggle="tab">Печать и пошив</a></li>
         </ul>
    
         <div class="tab-content">
@@ -49,11 +50,13 @@ use backend\components\ColorPickerWidget;
                     <div class="col-sm-6">
                         <?= $form->field($model, 'category_id')->dropDownList(Category::getAllTree()) ?>
 
-                        <?= $form->field($model, 'material_id')->dropDownList(Material::getList(), ['prompt' => 'Выберите из списка',]) ?>
-
                         <?= $form->field($model, 'color_id')->widget(ColorPickerWidget::className()); ?>
 
                         <?= $form->field($model, 'size_id')->dropDownList(Size::getList(), ['prompt' => 'Выберите из списка',]) ?>
+                        
+                        <br />
+                        
+                        <?= $form->field($model, 'design_id')->dropDownList([1 => 'Есть', 0 => 'Чистое']) ?>
                     </div>
                 </div> 
             </div>
@@ -98,6 +101,35 @@ use backend\components\ColorPickerWidget;
                 <?= $form->field($model, 'length')->textInput() ?>
                                 
                 <?= $form->field($model, 'quantityInbox')->textInput() ?>
+                
+            </div>
+        
+            <div class="tab-pane" id="production">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h4>Пошив</h4>
+                        <?= $form->field($model, 'sew_base')->dropDownList(Material::getList(), ['prompt' => 'Выберите из списка',]) ?>
+
+                        <?= $form->field($model, 'sew_rubber')->textInput() ?>
+
+                        <?= $form->field($model, 'sew_thread')->textInput() ?>
+
+                        <?= $form->field($model, 'sew_label')->textInput() ?>
+                    </div>
+                    <div class="col-sm-3">
+                        <h4>Печать</h4>
+                        
+                        <?= $form->field($model, 'print_type')->dropDownList([0 => 'Шелкография']) ?>
+                        
+                        <?= $form->field($model, 'print_colors')->textInput() ?>
+                        
+                        <?= $form->field($model, 'print_expense')->textInput() ?>
+                        
+                        <?= $form->field($model, 'print_more_material')->textInput() ?>
+                        
+                        <?= $form->field($model, 'print_panton_numbers')->textInput() ?>
+                    </div>
+                </div>
                 
             </div>
         </div>

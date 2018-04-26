@@ -16,17 +16,24 @@
     <tr>
         <th>#</th>
         <th colspan="2">Товар</th>
-        <th>Цвета / размер</th>
+        <th>Цвет / размер</th>
         <th>Кол-во</th>
         <th>Цена</th>
         <th>Скидка</th>
         <th>Итого</th>
-        <th></th>
+        <th style="width:30px">&nbsp;</th>
     </tr>
     <?php if ($model->status != Order::STATUS_DELIVERED && $model->status != Order::STATUS_CANCELED): ?>
     <tr>
         <td colspan="9">
-            <?= Html::a('<button class="btn btn-xs btn-success pull-right"><i class="fa fa-fw fa-plus"></i> Добавить позицию</button>', '#addItemModal', ['data-toggle' => 'modal']) ?>    
+           
+            <?= Html::a('<i class="fa fa-fw fa-plus"></i> Добавить позицию', '#addItemModal', ['data-toggle' => 'modal', 'class' => 'btn btn-xs btn-success']) ?>    
+           
+            <?php if (Yii::$app->request->get('edit')) { ?>
+                <?= Html::a('<i class="fa fa-fw fa-pencil"></i> вернуться к просмотру', Url::to(['order/view', 'id' => $model->id]), ['class' => 'pull-right btn btn-xs btn-warning']) ?>
+            <?php } else { ?>
+                <?= Html::a('<i class="fa fa-fw fa-pencil"></i> редактировать содержимое', Url::to(['order/view', 'id' => $model->id, 'edit' => true]), ['class' => 'pull-right btn btn-xs btn-warning']) ?>
+            <?php } ?>
         </td>
     </tr>
     <?php endif; ?>
@@ -67,7 +74,6 @@
         <td><?= number_format(round(($g->price - ($g->price / 100 * $g->discount)) * $g->quantity), 0, ',', ' ')  ?></td>
         <td style="text-align: right">
             <?php if ($model->status != Order::STATUS_DELIVERED && $model->status != Order::STATUS_CANCELED): ?>
-            <a href="<?= Url::to(['order/view', 'id' => $model->id, 'edit' => $g->id]) ?>" class="btn btn-warning btn-xs" title="Изменить данные"><i class="fa fa-fw fa-pencil"></i></a>
             <a href="<?= Url::to(['order/deletepos', 'id' => $g->id]) ?>" class="btn btn-danger btn-xs delete-pos" title="Удалить товар"><i class="fa fa-fw fa-times"></i></a>
             <?php endif; ?>
         </td>
@@ -124,29 +130,29 @@
     <?php endif; ?>
 
     <tr>
-        <th style="text-align: right" colspan="8">Подитог</th>
-        <th><?= $model->sum ?>  руб.</th>
+        <th style="text-align: right" colspan="7">Подитог</th>
+        <th colspan="2"><?= $model->sum ?> руб.</th>
     </tr>
     <tr>
-        <th style="text-align: right" colspan="8">Доставка</th>
-        <th><?= $model->delivery_cost ?>  руб.</th>
+        <th style="text-align: right" colspan="7">Доставка</th>
+        <th colspan="2"><?= $model->delivery_cost ?>  руб.</th>
     </tr>
 
     <tr>
-        <th style="text-align: right" colspan="8">Оплачено</th>
-        <th><?= $model->alreadyPayed ?> руб.</th>
+        <th style="text-align: right" colspan="7">Оплачено</th>
+        <th colspan="2"><?= $model->alreadyPayed ?> руб.</th>
     </tr>
 
     <?php if ($model->payment_partical > 0): ?>
     <tr>
-        <th style="text-align: right" colspan="8">Оплачено купоном</th>
-        <th><?= $model->payment_partical ?> руб.</th>
+        <th style="text-align: right" colspan="7">Оплачено купоном</th>
+        <th colspan="2"><?= $model->payment_partical ?> руб.</th>
     </tr>
     <?php endif; ?>
 
     <tr>
-        <th style="text-align: right" colspan="8">Итого к оплате</th>
-        <th><?= max(0, $model->delivery_cost + $model->sum - $model->alreadyPayed) ?> руб.</th>
+        <th style="text-align: right" colspan="7">Итого к оплате</th>
+        <th colspan="2"><?= max(0, $model->delivery_cost + $model->sum - $model->alreadyPayed) ?> руб.</th>
     </tr>
 
 
