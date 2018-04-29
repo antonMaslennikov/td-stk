@@ -4,6 +4,7 @@ namespace backend\models;
 
 use Yii;
 use yii\base\Model;
+use yii\data\SqlDataProvider;
 use yii\data\ActiveDataProvider;
 use common\models\Product;
 
@@ -15,6 +16,7 @@ class StockItemSearch extends StockItem
     public $category;
     public $material;
     public $size;
+    public $quantity;
     
     public $onstock = false;
     
@@ -47,32 +49,45 @@ class StockItemSearch extends StockItem
      */
     public function search($params)
     {
-        $query = StockItem::find()
-                    ->with('product');
-                    //->join('left', 'color', 'color.id = product.color_id');
+        $count = Yii::$app->db->createCommand('
+            SELECT COUNT(*) FROM product__stock WHERE order_item_id=0', [])->queryScalar();
 
-        // add conditions that should always apply here
-
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
+        $provider = new SqlDataProvider([
+            'sql' => 'SELECT 
+                        p.id AS product_id,
+                        p.name_ru, 
+                        p.category_id,
+                        p.color_id,
+                        p.size_id,
+                        p.design_id,
+                        s.name AS size, 
+                        c.name AS color,
+                        cat.name AS category,
+                        COUNT(ps.`id`) AS quantity
+                      FROM 
+                        {{product__stock}} ps, 
+                        {{product}} p
+                            LEFT JOIN {{category}} cat ON cat.`id` = p.`category_id`
+                            LEFT JOIN {{sizes}} s ON s.`id` = p.`size_id`
+                            LEFT JOIN {{color}} c ON c.`id` = p.`color_id`
+                      WHERE 
+                            1
+                        AND ps.`product_id` = p.id
+                      GROUP BY p.id',
+            'params' => [],
+            'totalCount' => $count,
+            'pagination' => [
+                'pageSize' => 50,
+            ],
+            'sort' => [
+                'attributes' => [
+                    'title',
+                    'view_count',
+                    'created_at',
+                ],
+            ],
         ]);
 
-        $this->load($params);
-
-        if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
-            return $dataProvider;
-        }    
-        
-        // grid filtering conditions
-        $query->andFilterWhere([
-            'id' => $this->id,
-            'product_id' => $this->product_id,
-            'order_item_id' => $this->order_item_id,
-        ]);
-
-
-        return $dataProvider;
+        return $provider;
     }
 }

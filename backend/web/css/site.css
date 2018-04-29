@@ -168,3 +168,8 @@ a.desc:after {
 }
 
 .ui-menu.ui-widget.ui-widget-content.ui-autocomplete.ui-front {z-index:10000}
+
+.product-previews a {
+    display:inline-block;
+    margin-bottom:10px;
+}

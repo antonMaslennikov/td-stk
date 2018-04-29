@@ -149,4 +149,14 @@ class Order extends \yii\db\ActiveRecord
         
         return true;
     }
+    
+    public function changeStatus($status)
+    {
+        if (!in_array($status, array_keys(Order::getStatusList()))) {
+            throw new Exception('Недопустимый статус заказа');
+        }
+        
+        $this->status = $status;
+        $this->save();
+    }
 }

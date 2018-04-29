@@ -219,8 +219,10 @@ class ProductController extends Controller
         return json_encode($results);
     }
     
-    public function actionTostock($id, $q)
+    public function actionTostock($id)
     {
+        $q = (int) Yii::$app->request->post('q');
+        
         if (empty($q)) {
             $q = 1;
         }

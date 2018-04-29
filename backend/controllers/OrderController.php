@@ -241,4 +241,23 @@ class OrderController extends Controller
         
         return $this->redirect(['view', 'id' => $model->order_id]);
     }
+    
+    public function actionChstatus()
+    {
+        if ($model = Order::findOne(Yii::$app->request->post('id'))) {
+            try
+            {
+                $model->changeStatus(Yii::$app->request->post('ch-status'));
+                Yii::$app->session->setFlash('success', 'Статус заказа успешно изменён');
+                
+            } 
+            catch (Exception $e) {
+                Yii::$app->session->setFlash('error', $e->getMessaage());
+            }
+        } else {
+            Yii::$app->session->setFlash('error', 'Заказ с таким номером не обнаружена!');
+        }
+        
+        return $this->redirect(['view', 'id' => $model->id]);
+    }
 }

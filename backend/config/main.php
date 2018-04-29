@@ -13,6 +13,7 @@ return [
     'bootstrap' => ['log'],
     'modules' => [],
 	'name'=>'TD-STK',
+    'language' => 'ru-RU', 
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-backend',

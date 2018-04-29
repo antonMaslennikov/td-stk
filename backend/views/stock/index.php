@@ -20,29 +20,43 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
             [
-                'attribute' => 'product.name_ru',
+                'attribute' => 'name_ru',
                 'format' => 'raw',
                 'content' => function($data) {
-                    return Html::a($data->product->name_ru, ['product/update', 'id' => $data->id], ['target' => '_blank']);
+                    return Html::a($data['name_ru'], ['product/update', 'id' => $data['product_id']], ['target' => '_blank']);
                 }
             ],
-            'order_item_id',
+            [
+                'attribute' => 'category_id',
+                'format' => 'raw',
+                'content' => function($data) {
+                    return $data['category'];
+                }
+            ],
+            [
+                'attribute' => 'color_id',
+                'format' => 'raw',
+                'content' => function($data) {
+                    return $data['color'];
+                }
+            ],
+            [
+                'attribute' => 'size_id',
+                'format' => 'raw',
+                'content' => function($data) {
+                    return $data['size'];
+                }
+            ],
+            [
+                'attribute' => 'quantity',
+                'format' => 'raw',
+                'content' => function($data) {
+                    return $data['quantity'];
+                }
+            ],
+            //'order_item_id',
             /*
-            [
-                'attribute' => 'color.id',
-                'format' => 'raw',
-                'content' => function($data) {
-                    return $data->color->name;
-                }
-            ],
-            [
-                'attribute' => 'size.id',
-                'format' => 'raw',
-                'content' => function($data) {
-                    return $data->size->name;
-                }
-            ]
-            'quantity'
+            
             [
 				'class' => 'yii\grid\ActionColumn',
 				'header'=>'Действия', 

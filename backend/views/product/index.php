@@ -20,6 +20,14 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
+            [
+                'format' => 'raw',
+                'value'=>function($data) { 
+                    return Html::img($data->picture, [
+                        'style' => 'width:85px;'
+                    ]);
+                },
+            ],
             'art',
             'name_ru',
             [

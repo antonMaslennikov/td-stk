@@ -36,6 +36,14 @@
             </tr>
         <?php else: ?>
 
+            <?php
+                $docTypesClasses = [
+                    Document::TYPE_BILL => 'success',
+                    Document::TYPE_AKT => 'warning',
+                    Document::TYPE_NAKL => 'info',
+                ]
+            ?>
+           
             <?php foreach($docs AS $i => $o): ?>
 
                 <?php $k = 0; ?>
@@ -45,10 +53,14 @@
                     <?php if ($k == 0) { ?>
                         <td rowspan="<?= count($o) ?>" style="background:#fff"><?= Html::a($i, Url::to(['order/view', 'id' => $i])) ?></td>
                     <? } ?>
-                    <td><?= Document::getTypes()[$d->type] ?>: <?= Html::a($d->name, Url::to(['document/view', 'id' => $i]), ['target' => '_blank']) ?></td>
+                    <td><span class="label label-<?= $docTypesClasses[$d->type] ?>"><?= Document::getTypes()[$d->type] ?></span> <?= Html::a($d->name, Url::to(['document/view', 'id' => $d->id]), ['target' => '_blank']) ?></td>
                     <td><?= $d->number ?></td>
                     <td><?= $d->sum ?></td>
-                    <td><?= Html::tag('span', $d->payed > 0 ? 'оплачен' : 'не оплачен', ['class' => 'label label-' . ($d->payed > 0 ? 'success' : 'danger')]) ?></td>
+                    <td>
+                        <?php if ($d->type == Document::TYPE_BILL): ?>
+                            <?= Html::tag('span', $d->payed > 0 ? 'оплачен' : 'не оплачен', ['class' => 'label label-' . ($d->payed > 0 ? 'success' : 'danger')]) ?>
+                        <?php endif; ?>
+                    </td>
                     <td><?= \Yii::$app->formatter->asDate($d->date) ?></td>
                 </tr>
 

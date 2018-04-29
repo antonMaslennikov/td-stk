@@ -64,15 +64,16 @@ class Product extends \yii\db\ActiveRecord
             'name_ru' => 'Название (рус)',
             'name_en' => 'Название (анг)',
             'slug' => 'Slug',
+            'category_id' => 'Категория',
 			'category' => 'Категория',
             'art' => 'Артикул',
             'color_id' => 'Цвет',
             'size_id' => 'Размер',
-            'picture' => 'Picture ID',
             'barcode' => 'Штрихкод',
+            'picture' => 'Изображение',
             'status' => 'Статус',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'created_at' => 'Дата создания',
+            'updated_at' => 'Последнее обновление',
             'quantity' => 'Количество на складе',
             'weight' => 'Вес брутто единицы товара, кг', 
             'width' => 'Ширина единицы товара, см', 
@@ -107,6 +108,11 @@ class Product extends \yii\db\ActiveRecord
             ->save(Yii::getAlias('@frontend') . '/web' . $pic->thumb, ['quality' => 90]);
         
         $pic->save();
+        
+        if (empty($this->picture)) {
+            $this->picture = $pic->thumb;
+            $this->save();
+        }
     }
     
     public function getCategory(){
@@ -127,5 +133,9 @@ class Product extends \yii\db\ActiveRecord
     
     public function getPictures(){
         return $this->hasMany(Picture::className(), ['product_id' => 'id']);
+    }
+    
+    public function getStockitems(){
+        return $this->hasMany(\backend\models\StockItem::className(), ['product_id' => 'id']);
     }
 }
