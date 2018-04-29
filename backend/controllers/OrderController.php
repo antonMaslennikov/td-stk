@@ -260,4 +260,11 @@ class OrderController extends Controller
         
         return $this->redirect(['view', 'id' => $model->id]);
     }
+    
+    public function actionApplication($id)
+    {
+        $model = $this->findModel($id);
+        
+        $model->donwnloadApplication();
+    }
 }

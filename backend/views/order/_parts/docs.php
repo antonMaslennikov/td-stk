@@ -21,7 +21,11 @@
 
 ?>
 
-        <p><?= Html::a('Реквизиты клиента', Url::to(['client/view', 'id' => $model->client_id]), ['class' => 'btn btn-primary']) ?></p>
+        <p>
+            <?= Html::a('Реквизиты клиента', Url::to(['client/view', 'id' => $model->client_id]), ['class' => 'btn btn-primary']) ?>
+        
+            <?= Html::a('Скачать приложение', Url::to(['order/application', 'id' => $model->client_id]), ['class' => 'btn btn-primary']) ?>
+        </p>
        
         <table class="table table-bordered table-striped dataTable" role="grid" aria-describedby="example1_info">
         <th>Заказ</th>
