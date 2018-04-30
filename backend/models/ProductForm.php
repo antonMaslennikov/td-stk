@@ -35,6 +35,7 @@ class ProductForm extends Model
     public $material_id;
     public $size_id;
     public $design_id;
+    public $sex;
 	public $pictures;
 	public $barcode;
 	public $status;
@@ -73,6 +74,8 @@ class ProductForm extends Model
             [['barcode'], 'string', 'max' => 30],
             [['status'], 'string', 'max' => 1],
             
+            ['sex', 'in', 'range' => array_keys(Product::getSexList())],
+            
             ['slug', 'unique', 'targetClass' => '\common\models\Product', 'message' => 'Такой Slug для товара уже существует.', 'filter' => function ($query) {
                 if ($this->id) {
 					$query->andWhere(['not', ['id'=>$this->id]]);
@@ -108,6 +111,7 @@ class ProductForm extends Model
             'color_id' => 'Цвет',
             'material_id' => 'Материал',
             'size_id' => 'Размер',
+            'sex' => 'Пол',
             'pictures' => 'Изображения товара',
             'barcode' => 'Штрихкод',
             'status' => 'Статус',
@@ -159,6 +163,7 @@ class ProductForm extends Model
         $p->design_id = $this->design_id;
         $p->barcode = $this->barcode;
         $p->status = $this->status;
+        $p->sex = $this->sex;
 		$p->picture = 0;
 		
         $p->selfprice = $this->selfprice;

@@ -77,6 +77,13 @@
 						],
 					],
                     ['label' => 'Клиенты', 'icon' => 'users', 'url' => ['/client']],
+                    ['label' => 'Статистика', 'icon' => 'database', 'url' => ['#'],
+                        'items' => [
+							['label' => 'По видам товаров', 'icon' => 'bars', 'url' => ['/stat/byproductcategorys']],
+							['label' => 'Сводный', 'icon' => 'bars', 'url' => ['/stat/summary']],
+                            ['label' => 'По менеджерам', 'icon' => 'bars', 'url' => ['/stat/bymanagers']],
+						],
+                    ],
 					[
 						'label' => 'Справочники', 
 						'icon' => 'folder-open', 

@@ -27,6 +27,11 @@ class Product extends \yii\db\ActiveRecord
 {
 	const STATUS_ACTIVE = 1;
 	const STATUS_DISABLED = 0;
+    
+    const SEX_MALE = 0;
+    const SEX_FEMALE = 1;
+    const SEX_KIDS = 2;
+    const SEX_UNISEX = 3;
 	
     /**
      * @inheritdoc
@@ -90,6 +95,16 @@ class Product extends \yii\db\ActiveRecord
 			self::STATUS_DISABLED => 'Отключен', 
 		];
 	}
+    
+    public function getSexList()
+    {
+        return [
+			self::SEX_MALE => 'Мужское',
+			self::SEX_FEMALE => 'Женское', 
+            self::SEX_KIDS => 'Детское', 
+            self::SEX_UNISEX => 'Унисекс', 
+		];
+    }
     
     public function addPicture($path)
     {

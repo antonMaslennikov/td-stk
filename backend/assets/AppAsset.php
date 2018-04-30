@@ -14,9 +14,12 @@ class AppAsset extends AssetBundle
     public $css = [
         'css/site.css',
 		'packages/fancybox/jquery.fancybox.min.css',
+        'packages/bootstrap-daterangepicker/daterangepicker.css',
     ];
     public $js = [
-		'packages/fancybox/jquery.fancybox.min.js',
+        'js/moment.min.js',
+        'packages/fancybox/jquery.fancybox.min.js',
+		'packages/bootstrap-daterangepicker/daterangepicker.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

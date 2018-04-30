@@ -157,6 +157,11 @@ class Order extends \yii\db\ActiveRecord
         }
         
         $this->status = $status;
+        
+        if ($status == self::STATUS_DELIVERED) {
+            $this->delivered_date = date('Y-m-d H:i:s');
+        }
+        
         $this->save();
     }
 }

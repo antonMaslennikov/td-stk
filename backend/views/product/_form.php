@@ -54,6 +54,8 @@ use backend\components\ColorPickerWidget;
 
                         <?= $form->field($model, 'size_id')->dropDownList(Size::getList(), ['prompt' => 'Выберите из списка',]) ?>
                         
+                        <?= $form->field($model, 'sex')->dropDownList(Product::getSexList(), ['prompt' => 'Выберите из списка',]) ?>
+                        
                         <br />
                         
                         <?= $form->field($model, 'design_id')->dropDownList([1 => 'Есть', 0 => 'Чистое']) ?>
