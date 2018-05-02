@@ -28,13 +28,7 @@ class StatController extends Controller
 
     public function actionIndex()
     {
-        $searchModel = new StockItemSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+        return $this->render('index');
     }
     
     public function actionByproductcategorys()

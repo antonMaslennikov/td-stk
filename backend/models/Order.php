@@ -60,6 +60,36 @@ class Order extends \common\models\Order
                 ->where(['type' => Document::TYPE_BILL, 'direction' => Document::FOR_CLIENT]);
     }
     
+    public function getLogsTimeline()
+    {
+        \Yii::$app->formatter->locale = 'ru-RU';
+        
+        $team = \common\models\user::find()->indexBy('id')->all();
+        
+        $data = [];
+        
+        foreach ($this->logs AS $l)
+        {
+            $day = date('y-m-d', strtotime($l->time));
+            
+            if (!$data[$day]) {
+                $data[$day] = ['date' => \Yii::$app->formatter->asDate($l->time)];
+            }
+            
+            $data[$day]['rows'][] = [
+                'user' => $team[$l->user_id],
+                'action' => $l['action'],
+                'result' => $l['result'],
+                'info' => $l['info'],
+                'time' => date('H:i', strtotime($l->time)),
+            ];
+        }
+        
+        //printr($data);
+        
+        return $data;
+    }
+    
     public function donwnloadApplication()
     {
         \Yii::$app->formatter->locale = 'ru-RU';
