@@ -15,6 +15,7 @@ class ProductSearch extends Product
     public $category;
     public $material;
     public $size;
+    public $print = true;
     
     public $onstock = false;
     
@@ -25,7 +26,7 @@ class ProductSearch extends Product
     {
         return [
             [['id', 'color_id'], 'integer'],
-            [['name_ru', 'name_en', 'slug', 'art', 'barcode', 'status', 'created_at', 'updated_at', 'category', 'material', 'size', 'picture'], 'safe'],
+            [['name_ru', 'name_en', 'slug', 'art', 'barcode', 'status', 'created_at', 'updated_at', 'category', 'material', 'size', 'picture', 'print'], 'safe'],
         ];
     }
 
@@ -87,6 +88,12 @@ class ProductSearch extends Product
             ->andFilterWhere(['like', 'art', $this->art])
             ->andFilterWhere(['like', 'barcode', $this->barcode])
             ->andFilterWhere(['like', 'product.status', $this->status]);
+
+        if ($this->print === 'clear') {
+            $query->andFilterWhere(['=', 'design_id', '0']);
+        } else {
+            $query->andFilterWhere(['>', 'design_id', '0']);
+        }
 
         return $dataProvider;
     }

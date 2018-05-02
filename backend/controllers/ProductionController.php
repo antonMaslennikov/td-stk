@@ -34,6 +34,7 @@ class ProductionController extends Controller
     {
         return $this->render('sewing', [
             'dataProvider' => Production::sewingSearch(Yii::$app->request->queryParams),
+            'grouped' => Yii::$app->request->get('group') ? Production::sewingGrouped() : null,
         ]);
     }
 

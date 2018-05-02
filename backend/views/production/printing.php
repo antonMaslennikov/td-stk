@@ -26,6 +26,15 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
             [
+                'format' => 'raw',
+                'value'=>function($data) { 
+                    return Html::img($data['picture'], [
+                        'style' => 'width:85px;'
+                    ]);
+                },
+            ],
+            
+            [
                 'label' => 'Принт',
                 'content'=>function($data){
                     return '-';

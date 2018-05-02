@@ -13,6 +13,15 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="product-index">
 
+    <ul class="nav nav-tabs">
+        <li <?php if (Yii::$app->request->get('ProductSearch')['print'] == 1 || !Yii::$app->request->get('ProductSearch')['print']): ?>class="active"<?php endif; ?>>
+            <?= Html::a('С печатью', Url::to(['index'])) ?>
+        </li>
+        <li <?php if (Yii::$app->request->get('ProductSearch')['print'] == 'clear'): ?>class="active"<?php endif; ?>>
+            <?= Html::a('Чистые', Url::to(['index', 'ProductSearch[print]' => 'clear'])) ?>
+        </li>
+    </ul>
+   
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
