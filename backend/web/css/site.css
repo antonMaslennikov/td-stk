@@ -173,3 +173,7 @@ a.desc:after {
     display:inline-block;
     margin-bottom:10px;
 }
+
+.content-wrapper {
+	overflow-x:auto;
+}

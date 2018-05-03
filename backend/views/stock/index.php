@@ -10,11 +10,12 @@ use yii\grid\GridView;
 $this->title = 'Склад готовой продукции';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+
 <div class="stock-item-index">
     
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        //'filterModel' => $searchModel,
+        'filterModel' => $searchModel,
         'layout'=>"{pager}\n{items}\n{pager}",
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
@@ -23,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'name_ru',
                 'format' => 'raw',
                 'content' => function($data) {
-                    return Html::a($data['name_ru'], ['product/update', 'id' => $data['product_id']], ['target' => '_blank']);
+                    return Html::a($data['name_ru'], ['product/view', 'id' => $data['product_id']]);
                 }
             ],
             [

@@ -5,6 +5,7 @@ namespace backend\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use yii\helpers\ArrayHelper;
 use backend\models\Order;
 
 /**
@@ -12,6 +13,11 @@ use backend\models\Order;
  */
 class OrderSearch extends Order
 {
+    public $create_period;
+    public $delivery_period;
+    public $nonpayedonly;
+    public $payedonly;
+    
     /**
      * @inheritdoc
      */
@@ -19,10 +25,18 @@ class OrderSearch extends Order
     {
         return [
             [['id', 'client_id', 'address_id'], 'integer'],
-            [['payment_type', 'delivery_type', 'created_at', 'manager'], 'safe'],
+            [['status', 'payment_type', 'delivery_type', 'created_at', 'manager_id', 'create_period', 'delivery_period', 'nonpayedonly', 'payedonly'], 'safe'],
         ];
     }
 
+    public function attributeLabels()
+    {
+        return ArrayHelper::merge(Order::attributeLabels(), [
+            'nonpayedonly' => 'только НЕ оплаченные',
+            'payedonly' => 'только оплаченные',
+        ]);
+    }
+    
     /**
      * @inheritdoc
      */
@@ -67,15 +81,47 @@ class OrderSearch extends Order
             'client_id' => $this->client_id,
             'address_id' => $this->address_id,
             'created_at' => $this->created_at,
+            'manager_id' => $this->manager_id,
         ]);
+        
+        if ($this->create_period) {
+            $p = explode(' - ', $this->create_period);
+            $query->andFilterWhere(['between', 'order.created_at', date('Y-m-d 00:00:00', strtotime(trim($p[0]))), date('Y-m-d 23:59:59', strtotime(trim($p[1])))]);
+        }
+        
+        if ($this->delivery_period) {
+            $p = explode(' - ', $this->delivery_period);
+            $query->andFilterWhere(['between', 'order.delivery_date', date('Y-m-d 00:00:00', strtotime(trim($p[0]))), date('Y-m-d 23:59:59', strtotime(trim($p[1])))]);
+        }
 
-        $query->andFilterWhere(['like', 'payment_type', $this->payment_type])
-            ->andFilterWhere(['like', 'delivery_type', $this->delivery_type]);
+        $query
+            ->andFilterWhere(['in', 'order.status', $this->status])
+            ->andFilterWhere(['in', 'payment_type', $this->payment_type])
+            ->andFilterWhere(['in', 'delivery_type', $this->delivery_type]);
 
+        if ($this->payedonly) {
+            $query->andFilterWhere(['payment_confirm' => 1]);
+        }
+        
+        if ($this->nonpayedonly) {
+            $query->andFilterWhere(['payment_confirm' => 0]);
+        }
+        
         $query->orderBy([
             'order.id' => SORT_DESC,
         ]);
         
         return $dataProvider;
+    }
+    
+    public function getManagersList()
+    {
+        $managers = \common\models\user::find()
+            ->select('username')
+            ->where(['role' => \common\components\RolesHelper::MANAGER])
+            ->indexBy('id')
+            ->column();
+        
+        return $managers;
     }
 }

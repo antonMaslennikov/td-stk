@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
@@ -13,23 +14,23 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="category-index">
 
     <p>
-        <?= Html::a('Create Category', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Новая категория', ['create'], ['class' => 'btn btn-success']) ?>
 		&nbsp;&nbsp;&nbsp;&nbsp;
-		<?= Html::a('Create Root', ['createroot'], ['class' => 'btn btn-info']) ?>
+		<!--?= Html::a('Create Root', ['createroot'], ['class' => 'btn btn-info']) ?-->
     </p>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
+        //'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+            //['class' => 'yii\grid\SerialColumn'],
 
             'id',
             [
 				'attribute' => 'name',
 				'format' => 'raw',
 				'value' => function($data){
-					return (str_repeat('–', $data->depth)) . ' ' . $data->name;
+					return (str_repeat('–', $data->depth)) . ' ' . Html::a($data->name, Url::to(['product/index', 'ProductSearch[category_id]' => $data->id]));
 				}
 			],
 			'slug',
@@ -40,9 +41,9 @@ $this->params['breadcrumbs'][] = $this->title;
 				},
 				'filter' => common\models\Category::getStatusList(),
 			],
-			'lft',
-            'rgt',
-            'depth',
+			//'lft',
+            //'rgt',
+            //'depth',
 
             [
 				'class' => 'yii\grid\ActionColumn',

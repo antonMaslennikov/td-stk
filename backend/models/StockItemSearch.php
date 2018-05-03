@@ -13,6 +13,7 @@ use common\models\Product;
  */
 class StockItemSearch extends StockItem
 {
+    public $name;
     public $category;
     public $material;
     public $size;
@@ -27,7 +28,7 @@ class StockItemSearch extends StockItem
     {
         return [
             [['id', 'product_id', 'order_item_id'], 'integer'],
-            [['come_at'], 'safe'],
+            [['name'], 'safe'],
         ];
     }
 

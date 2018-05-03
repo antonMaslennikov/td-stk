@@ -19,9 +19,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php \Yii::$app->formatter->locale = 'ru-RU'; ?>
    
+    <?php echo $this->render('_search', ['model' => $searchModel]); ?>
+   
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
+        //'filterModel' => $searchModel,
         'formatter' => [
             'class'=>'yii\i18n\Formatter', 
             'dateFormat'=>'d MMM yyyy г.', 

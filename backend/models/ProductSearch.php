@@ -26,7 +26,7 @@ class ProductSearch extends Product
     {
         return [
             [['id', 'color_id'], 'integer'],
-            [['name_ru', 'name_en', 'slug', 'art', 'barcode', 'status', 'created_at', 'updated_at', 'category', 'material', 'size', 'picture', 'print'], 'safe'],
+            [['name_ru', 'name_en', 'slug', 'art', 'barcode', 'status', 'created_at', 'updated_at', 'category_id', 'material', 'size', 'picture', 'print'], 'safe'],
         ];
     }
 
@@ -87,7 +87,8 @@ class ProductSearch extends Product
             ->andFilterWhere(['like', 'slug', $this->slug])
             ->andFilterWhere(['like', 'art', $this->art])
             ->andFilterWhere(['like', 'barcode', $this->barcode])
-            ->andFilterWhere(['like', 'product.status', $this->status]);
+            ->andFilterWhere(['like', 'product.status', $this->status])
+            ->andFilterWhere(['=', 'product.category_id', $this->category_id]);
 
         if ($this->print === 'clear') {
             $query->andFilterWhere(['=', 'design_id', '0']);

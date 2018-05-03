@@ -23,14 +23,14 @@ class Order extends \yii\db\ActiveRecord
     const STATUS_CANCELED  = 'canceled';
     
     public static $paymentTypes = [
-        1 => ['name' => 'Авансовый платёж'],
-        2 => ['name' => 'Банковский перевод'],
+        1 => ['name' => 'Аванс'],
+        2 => ['name' => 'Банк'],
         3 => ['name' => 'Наличные'],
         //4 => ['name' => 'Кредитная карта'],
     ];
         
     public static $deliveryTypes = [
-        1 => ['name' => 'Транспортная компания'],
+        1 => ['name' => 'ТК'],
         2 => ['name' => 'Самовывоз'],
     ];
     
@@ -70,6 +70,7 @@ class Order extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
+            'status' => 'Статус',
             'client_id' => 'Клиент',
             'address_id' => 'Адрес доставки',
             'payment_type' => 'Тип оплаты',
@@ -80,6 +81,7 @@ class Order extends \yii\db\ActiveRecord
             'sum' => 'Сумма, руб.',
             'created_at' => 'Создан',
             'manager' => 'Менеджер',
+            'manager_id' => 'Менеджер',
         ];
     }
     

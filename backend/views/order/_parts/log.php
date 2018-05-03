@@ -1,6 +1,8 @@
 <?php
     use yii\helpers\Url;
     use yii\helpers\Html;
+
+    use backend\models\Order;
 ?>
 
 <ul class="timeline">
@@ -38,7 +40,7 @@
                     break;
                 case 'change_payment_type':
                     $ico = 'bg-purple fa-refresh';
-                    $row['text'] = 'Изменён тип оплаты на ' . $row['result'] . ' с ' . $row['info'];
+                    $row['text'] = 'Изменён тип оплаты на "' . Order::$paymentTypes[$row['result']]['name'] . '" с "' . Order::$paymentTypes[$row['info']]['name'] . '"';
                     break;
                 case 'change_delivery_date':
                     $ico = 'bg-maroon fa-truck';
